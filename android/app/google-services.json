@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "606738930565",
+    "project_id": "hotel-management-a8f44",
+    "storage_bucket": "hotel-management-a8f44.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606738930565:android:3bdc262c79ab00f183c2ec",
+        "android_client_info": {
+          "package_name": "com.example.hotel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt4U6V65TXFjwHj1-RMr9de7TGgfBD_04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606738930565:android:896647720ff8c4ec83c2ec",
+        "android_client_info": {
+          "package_name": "com.example.hotel_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt4U6V65TXFjwHj1-RMr9de7TGgfBD_04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606738930565:android:a7fdf90fdeaff3c383c2ec",
+        "android_client_info": {
+          "package_name": "com.htask.ordering"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt4U6V65TXFjwHj1-RMr9de7TGgfBD_04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
