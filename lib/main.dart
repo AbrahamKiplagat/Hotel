@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hotel/presentation/authentication/screens/login_screen.dart';
 import 'package:hotel/presentation/authentication/screens/profile_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
+
+import 'package:hotel/presentation/authentication/screens/forgot_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hotel/presentation/home/home_screen.dart';
 import 'core/theme/theme.dart';
@@ -38,6 +40,7 @@ class Hotel extends StatelessWidget {
         '/signUp': (context) => const SignUpScreen(),
         '/login': (context) => const LoginScreen(),
         '/profile': (context) => const ProfileScreen(),
+      '/forgotPassword': (context) =>  ForgotPasswordScreen(), // New forgot password route
       },
     );
   }

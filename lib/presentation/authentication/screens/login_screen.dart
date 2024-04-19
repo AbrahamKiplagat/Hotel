@@ -47,7 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         // Attempt to sign in using Firebase Authentication.
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
@@ -109,7 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) { // Validate the email input.
+                validator: (value) {
+                  // Validate the email input.
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
@@ -127,16 +129,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelText: 'Password',
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
-                        _isPasswordVisible = !_isPasswordVisible; // Toggle visibility state.
+                        _isPasswordVisible =
+                            !_isPasswordVisible; // Toggle visibility state.
                       });
                     },
                   ),
                 ),
-                validator: (value) { // Validate the password input.
+                validator: (value) {
+                  // Validate the password input.
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
@@ -153,6 +159,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _login,
                       child: const Text('Login'),
                     ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/forgotPassword');
+                },
+                child: const Text("Forgot Password?"),
+              ),
             ],
           ),
         ),
