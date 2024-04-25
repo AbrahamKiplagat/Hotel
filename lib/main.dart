@@ -35,10 +35,12 @@ class Hotel extends StatelessWidget {
       theme: AppTheme.theme,
       initialRoute: '/',
       routes: {
-        '/': (context) => const MyHomePage(title: 'Counter App'),
+        '/': (context) => const MyHomePage(title: 'Hotel App'),
         '/home': (context) => const MyHomePage(title: 'Hotel Page'),
         '/signUp': (context) => const SignUpScreen(),
         '/login': (context) => const LoginScreen(),
+        // '/profile': (context) => ProfileScreen(email: ModalRoute.of(context)!.settings.arguments as String),
+
         '/profile': (context) => const ProfileScreen(),
       '/forgotPassword': (context) =>  ForgotPasswordScreen(), // New forgot password route
       },

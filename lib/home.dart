@@ -9,7 +9,7 @@ class MyHomePage extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Simple Counter App'),
+          title: const Text('Hotel App'),
         ),
         body: const Center(
           child: CounterWidget(),
