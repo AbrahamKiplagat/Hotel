@@ -219,7 +219,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: 'The Hotel screen'),
+                        builder: (context) =>  MyHomePage(title: 'The Hotel screen'),
                       ),
                     );
                   }
