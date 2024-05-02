@@ -36,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                        text: "",
+                        text: user!.displayName,
                         style: const TextStyle(
                           color: Colors.cyan,
                           fontSize: 25,
@@ -53,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                 height: 5,
               ),
               TextWidget(
-                text: "",
+                text: user.email,
                 color: Colors.cyan,
                 textSize: 18,
                 // isTitle: true,
@@ -74,9 +74,7 @@ class ProfileScreen extends StatelessWidget {
               _listTiles(
                 title: 'Bookings',
                 icon: IconlyLight.bag,
-                onPressed: () {
-                  Navigator.pushNamed(context, '/booking');
-                },
+                onPressed: () {},
                 color: Colors.cyan,
               ),
               _listTiles(

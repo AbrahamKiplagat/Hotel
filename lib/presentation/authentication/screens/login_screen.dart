@@ -142,6 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Text("Forgot Password?"),
               ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/admin');
+                },
+                child: const Text("Login as Admin"),
+              ),
             ],
           ),
         ),
