@@ -453,6 +453,12 @@ class MyHomePage extends StatelessWidget {
                 },
               ),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/signUp');
+              },
+              child: Text('Sign Up'),
+            ),
           ],
         ),
       ),

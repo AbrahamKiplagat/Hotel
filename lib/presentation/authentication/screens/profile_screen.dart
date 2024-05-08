@@ -4,11 +4,11 @@ import 'package:hotel/presentation/home/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-
 import 'package:hotel/domain/models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
@@ -36,16 +36,17 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                        text: "",
-                        style: const TextStyle(
-                          color: Colors.cyan,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            print('My name is pressed');
-                          }),
+                      text: user?.displayName ?? '', // Handling null case
+                      style: const TextStyle(
+                        color: Colors.cyan,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          print('My name is pressed');
+                        },
+                    ),
                   ],
                 ),
               ),
@@ -53,7 +54,7 @@ class ProfileScreen extends StatelessWidget {
                 height: 5,
               ),
               TextWidget(
-                text: "",
+                text: user?.email ?? '', // Handling null case
                 color: Colors.cyan,
                 textSize: 18,
                 // isTitle: true,
@@ -74,9 +75,7 @@ class ProfileScreen extends StatelessWidget {
               _listTiles(
                 title: 'Bookings',
                 icon: IconlyLight.bag,
-                onPressed: () {
-                  Navigator.pushNamed(context, '/booking');
-                },
+                onPressed: () {},
                 color: Colors.cyan,
               ),
               _listTiles(
@@ -86,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
                 color: Colors.cyan,
               ),
               _listTiles(
-                title: 'Forget password',
+                title: 'Forgot password',
                 icon: IconlyLight.unlock,
                 onPressed: () {},
                 color: Colors.cyan,
@@ -95,7 +94,8 @@ class ProfileScreen extends StatelessWidget {
                 title: 'Logout',
                 icon: IconlyLight.logout,
                 onPressed: () {
-                  authProvider.signOut(context);
+                  // Navigate back to main.dart
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
                 },
                 color: Colors.cyan,
               ),
