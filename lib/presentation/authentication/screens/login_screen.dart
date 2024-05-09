@@ -1,79 +1,27 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import 'package:hotel/presentation/authentication/widgets/logo.dart';
+import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
+//import 'package:hotel/presentation/home/profile_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-
+  const LoginScreen({super.key});
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _CreateUserScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-  bool _isPasswordVisible = false;
+class _CreateUserScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  bool _isValidEmail(String email) {
-    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-    return emailRegex.hasMatch(email);
-  }
-
-  void _login() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      var email = _emailController.text.trim();
-      var password = _passwordController.text.trim();
-
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        Navigator.pushReplacementNamed(context, '/profile', arguments: _emailController.text.trim());
-        
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          _isLoading = false;
-        });
-        String errorMessage = e.message ?? "An unexpected error occurred.";
-        _showErrorDialog("Login Failed", errorMessage);
-      }
-    }
-  }
-
-  void _showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -84,72 +32,46 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              const LogoWidget(),
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!_isValidEmail(value)) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
+        child: Column(
+          children: [
+            const LogoWidget(),
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: !_isPasswordVisible,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
-                  return null;
-                },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                labelText: 'Password',
               ),
-              const SizedBox(height: 20),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _login,
-                      child: const Text('Login'),
-                    ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/forgotPassword');
-                },
-                child: const Text("Forgot Password?"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/admin');
-                },
-                child: const Text("Login as Admin"),
-              ),
-            ],
-          ),
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String email = _emailController.text.trim();
+                String password = _passwordController.text.trim();
+                // Pass the current context to the AuthProvider
+                await context
+                    .read<AuthProvider>()
+                    .signInWithEmailAndPassword(context, email, password);
+                // Check if the user is created successfully
+                if (context.read<AuthProvider>().user != null) {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => BottomBar()));
+                }
+              },
+              child: const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/admin');
+              },
+              child: const Text('Login as admin'),
+            ),
+          ],
         ),
       ),
     );

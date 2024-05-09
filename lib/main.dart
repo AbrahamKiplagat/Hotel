@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hotel/home.dart';
 import 'package:hotel/presentation/authentication/screens/login_screen.dart';
 import 'package:hotel/presentation/authentication/screens/profile_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
@@ -51,6 +52,7 @@ class Hotel extends StatelessWidget {
       routes: {
         '/': (context) => MyHomePage(title: 'Hotel App'), // Home page route
         '/home': (context) =>  MyHomePage(title: 'Hotel Page'), // Home page route
+        '/homebar': (context) =>  MyHomePage1(title: 'Hotel Page'), // Home page route
         '/signUp': (context) => const SignUpScreen(), // SignUp screen route
         '/login': (context) => const LoginScreen(), // Login screen route
         '/booking': (context) => const BookingScreen(), // Booking screen route

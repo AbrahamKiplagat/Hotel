@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hotel/domain/models/room_model.dart';
 
 class RoomDetailsScreen extends StatelessWidget {
   final Room room;
 
-  const RoomDetailsScreen({super.key, required this.room});
+  const RoomDetailsScreen({Key? key, required this.room}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +27,7 @@ class RoomDetailsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize
-                    .min, // This will make the Card fit its content vertically
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     'Room Type: ${room.type}',
@@ -47,11 +47,11 @@ class RoomDetailsScreen extends StatelessWidget {
                     onPressed: room.isAvailable
                         ? () {
                             // Handle "Book Now" button press
+                            _bookRoom(context);
                           }
                         : null,
                     child: const Text('Book Now'),
                   ),
-                  // Add more details about the room here
                 ],
               ),
             ),
@@ -59,5 +59,30 @@ class RoomDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _bookRoom(BuildContext context) async {
+    try {
+      // Add the room booking to Firestore
+      await FirebaseFirestore.instance.collection('room_bookings').add({
+        'roomType': room.type,
+        'rate': room.rate,
+        'timestamp': DateTime.now(), // Optional: add a timestamp for the booking
+      });
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Room booked successfully!'),
+        ),
+      );
+    } catch (error) {
+      // Show an error message if booking fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to book room: $error'),
+        ),
+      );
+    }
   }
 }
