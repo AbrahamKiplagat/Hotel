@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
                 text: TextSpan(
                   text: 'Hi,  ',
                   style: const TextStyle(
-                    color: Colors.cyan,
+                    color: Color.fromARGB(255, 126, 136, 137),
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
                   ),

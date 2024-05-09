@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:hotel/domain/models/room_model.dart';
 
 class RoomDetailsScreen extends StatelessWidget {
@@ -9,6 +10,7 @@ class RoomDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Room Details'),
@@ -63,19 +65,27 @@ class RoomDetailsScreen extends StatelessWidget {
 
   void _bookRoom(BuildContext context) async {
     try {
-      // Add the room booking to Firestore
-      await FirebaseFirestore.instance.collection('room_bookings').add({
-        'roomType': room.type,
-        'rate': room.rate,
-        'timestamp': DateTime.now(), // Optional: add a timestamp for the booking
-      });
+      // Get the current user
+      User? user = FirebaseAuth.instance.currentUser;
 
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Room booked successfully!'),
-        ),
-      );
+      if (user != null) {
+        // Add the room booking to Firestore with the user's email
+        await FirebaseFirestore.instance.collection('room_bookings').add({
+          'roomType': room.type,
+          'rate': room.rate,
+          'timestamp': DateTime.now(),
+          'bookedBy': user.email, // Include the user's email
+        });
+
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Room booked successfully!'),
+          ),
+        );
+      } else {
+        throw 'User not authenticated';
+      }
     } catch (error) {
       // Show an error message if booking fails
       ScaffoldMessenger.of(context).showSnackBar(

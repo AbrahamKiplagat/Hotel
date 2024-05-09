@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotel/home.dart';
-// import 'package:hotel/presentation/home/home_screen.dart';
+import 'package:hotel/presentation/home/home_screen.dart';
 import 'package:hotel/presentation/home/profile_screen.dart';
 import 'package:hotel/presentation/search/search_screen.dart';
 import 'package:hotel/providers/navigation_provider.dart';
@@ -14,7 +14,7 @@ class BottomBar extends StatelessWidget {
     super.key,
   });
   final List<Widget> currentTab = [
-     MyHomePage1(title: 'Hotel Page'),
+     MyHomePage(title: 'Hotel Page'),
     const SearchScreen(),
     const ProfileScreen(),
     const AddHotelScreen(),

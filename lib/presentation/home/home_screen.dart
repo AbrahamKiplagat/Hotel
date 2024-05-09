@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hotel/presentation/home/hotel_rooms_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -9,12 +10,12 @@ class MyHomePage extends StatelessWidget {
   final pageController = PageController();
 
   final String title;
-  final UserModel? user;
 
-  MyHomePage({required this.title, super.key, this.user});
+  MyHomePage({required this.title, super.key});
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
     return ChangeNotifierProvider(
       create: (_) => HotelProvider()..fetchHotels(),
       child: Scaffold(
@@ -43,7 +44,7 @@ class MyHomePage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                       child: Text(
-                        'Welcome ${user?.displayName ?? ' '}',
+                        'Welcome ${user?.email ?? ' '}',
                         textAlign: TextAlign.start,
                         maxLines: 2,
                         overflow: TextOverflow.clip,
@@ -296,7 +297,7 @@ class MyHomePage extends StatelessWidget {
                               const Padding(
                                 padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                 child: Text(
-                                  "Text",
+                                  "Eldoret",
                                   textAlign: TextAlign.start,
                                   overflow: TextOverflow.clip,
                                   style: TextStyle(
