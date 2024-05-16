@@ -10,7 +10,7 @@ class LogoWidget extends StatelessWidget {
       child: CircleAvatar(
         backgroundColor: Colors.transparent,
         radius: 48.0,
-        child: Image.asset('images/logo.png'),
+        child: Image.asset('assets/images/logo.png'),
       ),
     );
   }

@@ -1,13 +1,16 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel/presentation/authentication/widgets/logo.dart';
+import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 import 'package:hotel/presentation/home/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+
 import 'package:hotel/domain/models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +33,13 @@ class ProfileScreen extends StatelessWidget {
                 text: TextSpan(
                   text: 'Hi,  ',
                   style: const TextStyle(
-                    color: Color.fromARGB(255, 126, 136, 137),
+                    color: Colors.cyan,
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: user?.displayName ?? '', // Handling null case
+                      text: user?.displayName ?? '',
                       style: const TextStyle(
                         color: Colors.cyan,
                         fontSize: 25,
@@ -53,11 +56,11 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
+              // Assuming TextWidget is a custom widget to display text
               TextWidget(
-                text: user?.email ?? '', // Handling null case
+                text: user?.email ?? '',
                 color: Colors.cyan,
                 textSize: 18,
-                // isTitle: true,
               ),
               const Divider(
                 thickness: 2,
@@ -85,7 +88,7 @@ class ProfileScreen extends StatelessWidget {
                 color: Colors.cyan,
               ),
               _listTiles(
-                title: 'Forgot password',
+                title: 'Forget password',
                 icon: IconlyLight.unlock,
                 onPressed: () {},
                 color: Colors.cyan,
@@ -94,8 +97,7 @@ class ProfileScreen extends StatelessWidget {
                 title: 'Logout',
                 icon: IconlyLight.logout,
                 onPressed: () {
-                  // Navigate back to main.dart
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                  authProvider.signOut(context);
                 },
                 color: Colors.cyan,
               ),
@@ -118,10 +120,9 @@ class ProfileScreen extends StatelessWidget {
         text: title,
         color: color,
         textSize: 22,
-        // isTitle: true,
       ),
       subtitle: TextWidget(
-        text: subtitle ?? "",
+        text: subtitle ?? '',
         color: color,
         textSize: 18,
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel/presentation/authentication/widgets/logo.dart';
+import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 import 'package:hotel/presentation/home/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
@@ -8,7 +10,8 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:hotel/domain/models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key});
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
@@ -36,27 +39,28 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                        text: user!.displayName,
-                        style: const TextStyle(
-                          color: Colors.cyan,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            print('My name is pressed');
-                          }),
+                      text: user?.displayName ?? '',
+                      style: const TextStyle(
+                        color: Colors.cyan,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          print('My name is pressed');
+                        },
+                    ),
                   ],
                 ),
               ),
               const SizedBox(
                 height: 5,
               ),
+              // Assuming TextWidget is a custom widget to display text
               TextWidget(
-                text: user.email,
+                text: user?.email ?? '',
                 color: Colors.cyan,
                 textSize: 18,
-                // isTitle: true,
               ),
               const Divider(
                 thickness: 2,
@@ -116,10 +120,9 @@ class ProfileScreen extends StatelessWidget {
         text: title,
         color: color,
         textSize: 22,
-        // isTitle: true,
       ),
       subtitle: TextWidget(
-        text: subtitle ?? "",
+        text: subtitle ?? '',
         color: color,
         textSize: 18,
       ),

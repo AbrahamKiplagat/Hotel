@@ -1,19 +1,18 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
-import 'package:hotel/presentation/authentication/widgets/logo.dart';
-import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
-//import 'package:hotel/presentation/home/profile_screen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
+import 'profile_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
-  State<LoginScreen> createState() => _CreateUserScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _CreateUserScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -34,7 +33,6 @@ class _CreateUserScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const LogoWidget(),
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -53,17 +51,23 @@ class _CreateUserScreenState extends State<LoginScreen> {
               onPressed: () async {
                 String email = _emailController.text.trim();
                 String password = _passwordController.text.trim();
-                // Pass the current context to the AuthProvider
                 await context
                     .read<AuthProvider>()
                     .signInWithEmailAndPassword(context, email, password);
-                // Check if the user is created successfully
-                if (context.read<AuthProvider>().user != null) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => BottomBar()));
+                if (context.read<AuthProvider>().isLoggedIn) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  );
                 }
               },
               child: const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/forgotPassword');
+              },
+              child: const Text('Forgot password?'),
             ),
             TextButton(
               onPressed: () {
