@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (context.read<AuthProvider>().isLoggedIn) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    MaterialPageRoute(builder: (context) => BottomBar()),
                   );
                 }
               },

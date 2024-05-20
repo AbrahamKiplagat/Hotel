@@ -39,7 +39,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: user?.displayName ?? '',
+                      text: user?.email ?? '',
                       style: const TextStyle(
                         color: Colors.cyan,
                         fontSize: 25,
@@ -57,11 +57,11 @@ class ProfileScreen extends StatelessWidget {
                 height: 5,
               ),
               // Assuming TextWidget is a custom widget to display text
-              TextWidget(
-                text: user?.email ?? '',
-                color: Colors.cyan,
-                textSize: 18,
-              ),
+              // TextWidget(
+              //   text: user?.email ?? '',
+              //   color: Colors.cyan,
+              //   textSize: 18,
+              // ),
               const Divider(
                 thickness: 2,
               ),

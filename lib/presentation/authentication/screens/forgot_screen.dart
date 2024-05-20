@@ -8,14 +8,17 @@ class ForgotPasswordScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
 
   // Constructor for ForgotPasswordScreen.
-  ForgotPasswordScreen({Key? key}) : super(key: key);  // Standard constructor for a StatelessWidget.
+  ForgotPasswordScreen({Key? key}) : super(key: key);
 
   /// Sends a password reset email to the provided email address.
   /// Shows a success message upon successful sending or an error message on failure.
   Future<void> _resetPassword(BuildContext context) async {
+    String email = _emailController.text.trim();
+
     try {
       // Attempt to send the password reset email using Firebase Auth.
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
       // Show a success snack bar if the email is sent successfully.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Password reset email sent.")),
@@ -33,25 +36,25 @@ class ForgotPasswordScreen extends StatelessWidget {
     // Building the UI for the forgot password screen.
     return Scaffold(
       appBar: AppBar(
-        title: Text("Reset Password"),  // Title of the AppBar.
+        title: Text("Reset Password"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),  // Padding for all sides set to 16.0.
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,  // Center the column in the middle of the screen.
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Text field for user to enter their email address.
             TextField(
-              controller: _emailController,  // Connects the text field to the email controller.
+              controller: _emailController,
               decoration: const InputDecoration(
-                labelText: "Email",  // Label text that appears above the TextField when it is in focus.
+                labelText: "Email",
               ),
             ),
-            const SizedBox(height: 20),  // Provides vertical spacing between the email field and the button.
+            const SizedBox(height: 20),
             // Button that triggers the password reset process when pressed.
             ElevatedButton(
-              onPressed: () => _resetPassword(context),  // Calls the _resetPassword method when tapped.
-              child: const Text("Send Password Reset Email"),  // Text displayed inside the button.
+              onPressed: () => _resetPassword(context),
+              child: const Text("Send Password Reset Email"),
             ),
           ],
         ),

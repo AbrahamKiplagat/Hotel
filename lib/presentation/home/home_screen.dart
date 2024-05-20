@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hotel/presentation/home/hotel_rooms_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../domain/models/user_model.dart';
 import '../../providers/hotel_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -12,6 +11,23 @@ class MyHomePage extends StatelessWidget {
   final String title;
 
   MyHomePage({required this.title});
+
+ Future<Map<String, dynamic>?> fetchUserData(String uid) async {
+  try {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (userDoc.exists) {
+      return userDoc.data() as Map<String, dynamic>?; // Cast to nullable type
+    } else {
+      print('User document does not exist');
+      return null;
+    }
+  } catch (e) {
+    print('Error fetching user data: $e');
+    return null;
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,44 +45,101 @@ class MyHomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
-                    height: 45,
-                    width: 45,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.network(
-                      "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
-                      fit: BoxFit.cover,
-                    ),
+                  FutureBuilder<Map<String, dynamic>?>(
+                    future: fetchUserData(user!.uid),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      }
+                      if (!snapshot.hasData) {
+                        return CircleAvatar(
+                          radius: 22.5,
+                          backgroundImage: NetworkImage(
+                            "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
+                          ),
+                        );
+                      }
+                      Map<String, dynamic>? userData = snapshot.data;
+                      return CircleAvatar(
+                        radius: 22.5,
+                        backgroundImage: userData!['imagePath'] != null
+                            ? NetworkImage(userData['imagePath'])
+                            : NetworkImage(
+                                "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
+                              ),
+                      );
+                    },
                   ),
                   Expanded(
                     flex: 1,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                      child: FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user!.uid)
-                            .get(),
+                      child: FutureBuilder<Map<String, dynamic>?>(
+                        future: fetchUserData(user!.uid),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
                             return CircularProgressIndicator();
                           }
-                          var userData = snapshot.data!.data() as Map?;
-                          return Text(
-                            'Welcome ${userData?['displayName'] ?? ' '}',
-                            textAlign: TextAlign.start,
-                            maxLines: 2,
-                            overflow: TextOverflow.clip,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontStyle: FontStyle.normal,
-                              fontSize: 14,
-                              color: Color(0xff000000),
-                            ),
+                          if (!snapshot.hasData) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Welcome',
+                                  textAlign: TextAlign.start,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontStyle: FontStyle.normal,
+                                    fontSize: 14,
+                                    color: Color(0xff000000),
+                                  ),
+                                ),
+                                Text(
+                                  user.email ?? '',
+                                  textAlign: TextAlign.start,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontStyle: FontStyle.normal,
+                                    fontSize: 14,
+                                    color: Color(0xff000000),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          Map<String, dynamic>? userData = snapshot.data;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome ${userData!['displayName']}',
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 14,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                              Text(
+                                user.email ?? '',
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.normal,
+                                  fontSize: 14,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),
@@ -97,6 +170,7 @@ class MyHomePage extends StatelessWidget {
                 borderRadius: BorderRadius.zero,
               ),
               child: SingleChildScrollView(
+               
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -120,6 +194,9 @@ class MyHomePage extends StatelessWidget {
                     itemBuilder: (context, position) {
                       List<String> imageUrls = [
                         // Add your image URLs here
+                      "https://media.istockphoto.com/id/1193996236/photo/scenic-of-night-urban-cityscape-skyline-and-golden-building-with-twilight-time.jpg?s=2048x2048&w=is&k=20&c=98Eh08jrwH9DQNxx1V7gUOjeEQoJXuX8T7AmVmFy90M=",
+                        "https://media.istockphoto.com/id/1193996236/photo/scenic-of-night-urban-cityscape-skyline-and-golden-building-with-twilight-time.jpg?s=2048x2048&w=is&k=20&c=98Eh08jrwH9DQNxx1V7gUOjeEQoJXuX8T7AmVmFy90M=",
+                        "https://media.istockphoto.com/id/1193996236/photo/scenic-of-night-urban-cityscape-skyline-and-golden-building-with-twilight-time.jpg?s=2048x2048&w=is&k=20&c=98Eh08jrwH9DQNxx1V7gUOjeEQoJXuX8T7AmVmFy90M=",
                       ];
                       return Align(
                         alignment: Alignment.topCenter,
@@ -208,29 +285,15 @@ class MyHomePage extends StatelessWidget {
                                         fontSize: 16.0,
                                       ),
                                     ),
-                                    const SizedBox(height: 4.0),
-                                    Text(
-                                      hotel.location,
-                                      style: const TextStyle(
-                                        fontSize: 14.0,
-                                      ),
+                                    const SizedBox(
+                                      height: 4.0,
                                     ),
-                                    const SizedBox(height: 8.0),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                        ),
-                                        const SizedBox(width: 4.0),
-                                        Text(
-                                          hotel.rating.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 14.0,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    // Text(
+                                    //   // hotel.description,
+                                    //   style: const TextStyle(
+                                    //     fontSize: 14.0,
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -242,12 +305,6 @@ class MyHomePage extends StatelessWidget {
                   );
                 },
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/signUp');
-              },
-              child: Text('Sign Up'),
             ),
           ],
         ),
