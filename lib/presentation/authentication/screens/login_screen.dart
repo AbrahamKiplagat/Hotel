@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
-import 'profile_screen.dart';
+import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -52,9 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () async {
                 String email = _emailController.text.trim();
                 String password = _passwordController.text.trim();
-                await context
-                    .read<AuthProvider>()
-                    .signInWithEmailAndPassword(context, email, password);
+                await context.read<AuthProvider>().signInWithEmailAndPassword(context, email, password);
                 if (context.read<AuthProvider>().isLoggedIn) {
                   Navigator.pushReplacement(
                     context,

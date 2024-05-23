@@ -2,15 +2,19 @@ enum UserRole { admin, user }
 
 class UserModel {
   String uid;
-  String email;
-  String displayName;
+  String? email; // Make email nullable
+  String? displayName; // Make displayName nullable
   String? imagePath;
+  String? phoneNumber; // Make phoneNumber nullable
+  String? password; // Make password nullable
 
   UserModel({
     required this.uid,
-    required this.email,
-    required this.displayName,
+    this.email,
+    this.displayName,
     this.imagePath,
+    this.phoneNumber,
+    this.password,
   });
 
   // Serialize data to JSON
@@ -20,6 +24,8 @@ class UserModel {
       'email': email,
       'displayName': displayName,
       'imagePath': imagePath,
+      'phoneNumber': phoneNumber,
+      'password': password,
     };
   }
 
@@ -30,6 +36,8 @@ class UserModel {
       email: json['email'],
       displayName: json['displayName'],
       imagePath: json['imagePath'],
+      phoneNumber: json['phoneNumber'],
+      password: json['password'],
     );
   }
 }

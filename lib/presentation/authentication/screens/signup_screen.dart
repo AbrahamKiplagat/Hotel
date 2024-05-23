@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:hotel/providers/auth_provider.dart';
 import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -17,7 +17,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _displayNameController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
   File? _imageFile;
 
   Future<void> _getImage() async {
@@ -40,37 +39,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    // Get user input data
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String displayName = _displayNameController.text.trim();
-    String phoneNumber = _phoneNumberController.text.trim();
+    String phoneNumber = _displayNameController.text.trim();
 
     try {
-      // Sign up the user using FirebaseAuth (your existing logic)
-      // For example:
-      // await context
-      //     .read<AuthProvider>()
-      //     .createUserWithEmailAndPassword(context, email, password, displayName);
-
-      // Add user data to Firestore
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      DocumentReference userDocRef = await firestore.collection('users').add({
-        'email': email,
-        'displayName': displayName,
-        'phoneNumber': phoneNumber,
-        'password': password, // Store the password
-        'imagePath': _imageFile != null ? _imageFile!.path : null, // Store image path if available
-        // Add more user data as needed
-      });
-
-      // Navigate to the BottomBar screen after successful sign-up
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => BottomBar()),
-      );
+      await context.read<AuthProvider>().createUserWithEmailAndPassword(context, email, password, displayName,phoneNumber);
+      if (context.read<AuthProvider>().isLoggedIn) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BottomBar()),
+        );
+      }
     } catch (e) {
-      // Handle any errors
       print('Error: $e');
     }
   }
@@ -115,16 +97,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 16),
                     TextFormField(
-                      controller: _phoneNumberController,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        hintText: "Phone Number",
-                        labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
@@ -149,7 +121,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Navigate to login screen
+                        Navigator.pushNamed(context, '/login');
                       },
                       child: const Text('Already have an account? Login'),
                     ),
