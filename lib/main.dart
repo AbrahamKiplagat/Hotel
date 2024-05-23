@@ -56,7 +56,7 @@ class Hotel extends StatelessWidget {
         '/signUp': (context) => const SignUpScreen(), // SignUp screen route
         '/login': (context) => const LoginScreen(), // Login screen route
         '/booking': (context) => const BookingScreen(), // Booking screen route
-        '/profile': (context) => const ProfileScreen(), // Profile screen route
+        // '/profile': (context) => const ProfileScreen(), // Profile screen route
         '/forgotPassword': (context) => ForgotPasswordScreen(), // Forgot password screen route
         '/admin': (context) => AdminScreen(), // Admin screen route
         '/addHotels': (context) => const AddHotelScreen(), // Add hotels screen route

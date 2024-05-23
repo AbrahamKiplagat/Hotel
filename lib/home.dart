@@ -10,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('images/ob3.png'),
+                image: AssetImage('assets/images/ob3.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -22,7 +22,7 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 // Hotel Logo or Image
                 Image.asset(
-                  'images/image1.png',
+                  'assets/images/image1.png',
                   width: 150,
                   height: 150,
                 ),

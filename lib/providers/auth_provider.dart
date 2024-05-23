@@ -10,27 +10,33 @@ class AuthProvider extends ChangeNotifier {
 
   UserModel? get user => _user;
   String? get errorMessage => _errorMessage;
-  bool get isLoggedIn => _isLoggedIn; // Expose the login status
+  bool get isLoggedIn => _isLoggedIn;
 
-  Future<void> createUserWithEmailAndPassword(BuildContext context,
-      String email, String password, String displayName) async {
-    UserModel? createdUser = await _authService.createUserWithEmailAndPassword(
-        context, email, password, displayName);
-    if (createdUser != null) {
-      _user = createdUser;
-      _errorMessage = null;
-      _isLoggedIn = true;
-      notifyListeners();
-    } else {
-      _errorMessage = "An error occurred while creating the user.";
-      notifyListeners();
+  Future<UserModel?> createUserWithEmailAndPassword(BuildContext context, String email, String password, String displayName,String phoneNumber) async {
+    try {
+      final hashedPassword = _hashPassword(password);
+      final userCredential = await _authService.createUserWithEmailAndPassword(context, email, hashedPassword, displayName, phoneNumber);
+      if (userCredential != null) {
+        _user = userCredential;
+        _errorMessage = null;
+        _isLoggedIn = true;
+        notifyListeners();
+        return _user;
+      } else {
+        _errorMessage = "An error occurred while creating the user.";
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+      return null;
     }
   }
 
-  Future<void> signInWithEmailAndPassword(
-      BuildContext context, String email, String password) async {
-    UserModel? signedInUser =
-        await _authService.signInWithEmailAndPassword(context, email, password);
+  Future<void> signInWithEmailAndPassword(BuildContext context, String email, String password) async {
+    UserModel? signedInUser = await _authService.signInWithEmailAndPassword(context, email, password);
     if (signedInUser != null) {
       _user = signedInUser;
       _errorMessage = null;
@@ -42,11 +48,15 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future signOut(BuildContext context) async {
+  Future<void> signOut(BuildContext context) async {
     await _authService.signOut(context);
-    // ignore: use_build_context_synchronously
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     _isLoggedIn = false;
     notifyListeners();
+  }
+
+  String _hashPassword(String password) {
+    // Add your password hashing logic here
+    return password; // For demonstration, returning the password as is
   }
 }

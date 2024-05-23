@@ -1,124 +1,82 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hotel/domain/models/user_model.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel/domain/models/user_model.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Create user with email and password
-  Future<UserModel?> createUserWithEmailAndPassword(BuildContext context,
-      String email, String password, String displayName) async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      User? user = userCredential.user;
-      //debugPrint('user: $user');
-      final userModel = UserModel(
-        uid: userCredential.user!.uid,
-        email: userCredential.user!.email ?? '',
-        displayName: displayName,
-      );
-      // Create a new user document in Firestore
-      try {
-        await _firestore
-            .collection('users')
-            .doc(user!.uid)
-            .set(userModel.toJson());
-        debugPrint('done');
-      } catch (e) {
-        // Handle Firestore error
-        debugPrint('Error creating user document: $e');
-        rethrow;
-      }
-      return UserModel(
-        uid: user.uid,
-        email: user.email ?? '',
-        displayName: displayName,
-      );
-    } on FirebaseAuthException catch (e) {
-      // Handle specific FirebaseAuthException errors
-      String errorMessage = '';
-      switch (e.code) {
-        case 'weak-password':
-          errorMessage = 'The password provided is too weak.';
-          break;
-        case 'email-already-in-use':
-          errorMessage = 'The account already exists for that email.';
-          break;
-        default:
-          errorMessage = 'An error occurred while creating the user.';
-      }
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.info,
-        animType: AnimType.rightSlide,
-        title: 'Error',
-        desc: errorMessage,
-        btnOkOnPress: () {},
-      ).show();
-      return null;
-    }
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
-  // Sign in with email and password
-  Future<UserModel?> signInWithEmailAndPassword(
-      BuildContext context, String email, String password) async {
+  Future<UserModel?> createUserWithEmailAndPassword(BuildContext context, String email, String password, String displayName, String phoneNumber) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      final hashedPassword = _hashPassword(password);
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      final user = userCredential.user;
+      
+      if (user != null) {
+        final userModel = UserModel(
+          uid: user.uid,
+          email: user.email,
+          displayName: displayName,
+          phoneNumber: phoneNumber,
+          password: hashedPassword,
+        );
+        
+        await _firestore.collection('users').doc(user.uid).set(userModel.toJson());
 
-      User? user = userCredential.user;
-      String uid = user?.uid ?? '';
-      String userEmail = user?.email ?? '';
-      String displayName = user?.displayName ?? '';
-
-      // Regular user flow
-      return UserModel(
-        uid: uid,
-        email: userEmail,
-        displayName: displayName,
-      );
-    } on FirebaseAuthException catch (e) {
-      // Handle specific FirebaseAuthException errors
-      String errorMessage = '';
-      switch (e.code) {
-        case 'user-not-found':
-          errorMessage = 'No user found with that email.';
-          break;
-        case 'wrong-password':
-          errorMessage = 'Wrong password provided for that user.';
-          break;
-        default:
-          errorMessage = 'An error occurred while signing in.';
+        return userModel;
       }
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.info,
-        animType: AnimType.rightSlide,
-        title: 'Error',
-        desc: errorMessage,
-        btnOkOnPress: () {},
-      ).show();
-      return null;
-    }
-  }
-
-  //sign out
-  Future<UserModel?> signOut(BuildContext context) async {
-    try {
-      await _auth.signOut();
-      return null;
     } catch (e) {
-      debugPrint('Error signing out: $e');
-      rethrow;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
+    return null;
+  }
+
+  Future<UserModel?> signInWithEmailAndPassword(BuildContext context, String email, String password) async {
+    try {
+      final hashedPassword = _hashPassword(password);
+      final userDoc = await _firestore.collection('users').where('email', isEqualTo: email).get();
+      
+      if (userDoc.docs.isNotEmpty) {
+        final userData = userDoc.docs.first.data();
+        if (userData['password'] == hashedPassword) {
+          final userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+          final user = userCredential.user;
+          
+          if (user != null) {
+            return UserModel(
+              uid: user.uid,
+              email: user.email,
+              displayName: userData['displayName'],
+              phoneNumber: userData['phoneNumber'],
+              password: userData['password'],
+            );
+          }
+        } else {
+          throw Exception('Invalid password');
+        }
+      } else {
+        throw Exception('User not found');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+    return null;
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    await _firebaseAuth.signOut();
   }
 }
