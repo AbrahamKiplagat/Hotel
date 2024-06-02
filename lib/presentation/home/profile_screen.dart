@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel/presentation/authentication/widgets/logo.dart';
+import 'package:hotel/presentation/dashboard/bookedby.dart';
 import 'package:hotel/presentation/home/widgets/bottom_nav.dart';
 import 'package:hotel/presentation/home/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
@@ -77,8 +78,13 @@ class ProfileScreen extends StatelessWidget {
               ),
               _listTiles(
                 title: 'Bookings',
-                icon: IconlyLight.bag,
-                onPressed: () {},
+                icon: Icons.book,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BookingDisplayScreen()),
+                  );
+                },
                 color: Colors.cyan,
               ),
               _listTiles(
