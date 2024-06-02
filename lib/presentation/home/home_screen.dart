@@ -90,7 +90,8 @@ class MyHomePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 0, horizontal: 8),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,7 +107,8 @@ class MyHomePage extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: const ImageIcon(
-                                NetworkImage("https://cdn1.iconfinder.com/data/icons/basi-icon-set-01/100/Fin_copy-37-256.png"),
+                                NetworkImage(
+                                    "https://cdn1.iconfinder.com/data/icons/basi-icon-set-01/100/Fin_copy-37-256.png"),
                                 size: 24,
                                 color: Color.fromARGB(255, 44, 179, 224),
                               ),
@@ -134,11 +136,16 @@ class MyHomePage extends StatelessWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          _buildCityItem(context, "Nairobi", "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
-                          _buildCityItem(context, "Kisumu", "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
-                          _buildCityItem(context, "Mombasa", "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
-                          _buildCityItem(context, "Nyali", "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
-                          _buildCityItem(context, "Eldoret", "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
+                          _buildCityItem(context, "Nairobi",
+                              "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
+                          _buildCityItem(context, "Kisumu",
+                              "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
+                          _buildCityItem(context, "Mombasa",
+                              "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
+                          _buildCityItem(context, "Nyali",
+                              "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
+                          _buildCityItem(context, "Eldoret",
+                              "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw="),
                         ],
                       ),
                     ],
@@ -156,13 +163,15 @@ class MyHomePage extends StatelessWidget {
                       itemCount: 3,
                       itemBuilder: (context, position) {
                         List<String> imageUrls = [
-                          "https://media.istockphoto.com/id/1193996236/photo/scenic-of-night-urban-cityscape-skyline-and-golden-building-with-twilight-time.jpg?s=2048x2048&w=is&k=20&c=98Eh08jrwH9DQNxx1V7gUOjeEQoJXuX8T7AmVmFy90M="
-                          ];
+                          "https://media.istockphoto.com/id/1193996236/photo/scenic-of-night-urban-cityscape-skyline-and-golden-building-with-twilight-time.jpg?s=2048x2048&w=is&k=20&c=98Eh08jrwH9DQNxx1V7gUOjeEQoJXuX8T7AmVmFy90M=",
+                          "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw=",
+                          "https://media.istockphoto.com/id/1299026534/photo/nairobi-kenya.jpg?s=612x612&w=0&k=20&c=xwCQ441cTHFBTZpb8ihvVwqqtTZjmees1C3xdJc_nfw=",
+                        ];
                         return Align(
                           alignment: Alignment.topCenter,
                           child: Image.network(
-                            imageUrls[position], // Use the URL at the current position
-                            height: 200,
+                            imageUrls[
+                                position],                             height: 200,
                             width: MediaQuery.of(context).size.width,
                             fit: BoxFit.cover,
                           ),
@@ -201,7 +210,8 @@ class MyHomePage extends StatelessWidget {
                     );
                   }
                   return GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
@@ -218,7 +228,8 @@ class MyHomePage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HotelRoomsScreen(hotel: hotel),
+                              builder: (context) =>
+                                  HotelRoomsScreen(hotel: hotel),
                             ),
                           );
                         },
@@ -233,18 +244,19 @@ class MyHomePage extends StatelessWidget {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(12.0), // Adjusted padding
+                                padding: const EdgeInsets.all(
+                                    12.0), // Adjusted padding
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       hotel.name,
                                       style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.0, 
-                                        fontStyle: FontStyle.italic,
-                                        color: Color.fromARGB(255, 234, 0, 255)
-                                      ),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0,
+                                          fontStyle: FontStyle.italic,
+                                          color:
+                                              Color.fromARGB(255, 234, 0, 255)),
                                     ),
                                     const SizedBox(height: 4.0),
                                     Text(
@@ -281,6 +293,40 @@ class MyHomePage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 30.0), // Add some space after the button
+              // Customer Reviews Section
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Customer Reviews',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    _buildReviewItem(
+                      context,
+                      'John Doe',
+                      'Absolutely amazing experience! The hotel staff was very friendly and the rooms were clean and spacious. Will definitely be returning soon!',
+                      5,
+                    ),
+                    SizedBox(height: 20.0),
+                    _buildReviewItem(
+                      context,
+                      'Jane Smith',
+                      'Great location, comfortable beds, and excellent service. Highly recommended!',
+                      4,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -288,7 +334,8 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCityItem(BuildContext context, String cityName, String imageUrl) {
+  Widget _buildCityItem(
+      BuildContext context, String cityName, String imageUrl) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
       child: Column(
@@ -322,6 +369,53 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildReviewItem(BuildContext context, String reviewerName,
+      String reviewText, int rating) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              reviewerName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
+            ),
+            Row(
+              children: [
+                Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                  size: 16.0,
+                ),
+                SizedBox(
+                  width: 5.0,
+                ),
+                Text(
+                  '$rating',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 5.0),
+        Text(
+          reviewText,
+          style: TextStyle(
+            fontSize: 14.0,
+          ),
+        ),
+      ],
     );
   }
 }
