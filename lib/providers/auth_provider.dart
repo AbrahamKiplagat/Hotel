@@ -12,7 +12,7 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
 
-  Future<UserModel?> createUserWithEmailAndPassword(BuildContext context, String email, String password, String displayName,String phoneNumber) async {
+  Future<void> createUserWithEmailAndPassword(BuildContext context, String email, String password, String displayName, String phoneNumber) async {
     try {
       final hashedPassword = _hashPassword(password);
       final userCredential = await _authService.createUserWithEmailAndPassword(context, email, hashedPassword, displayName, phoneNumber);
@@ -21,42 +21,50 @@ class AuthProvider extends ChangeNotifier {
         _errorMessage = null;
         _isLoggedIn = true;
         notifyListeners();
-        return _user;
       } else {
         _errorMessage = "An error occurred while creating the user.";
         notifyListeners();
-        return null;
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-      return null;
+      _errorMessage = "An error occurred: $e";
+      notifyListeners();
     }
   }
 
   Future<void> signInWithEmailAndPassword(BuildContext context, String email, String password) async {
-    UserModel? signedInUser = await _authService.signInWithEmailAndPassword(context, email, password);
-    if (signedInUser != null) {
-      _user = signedInUser;
-      _errorMessage = null;
-      _isLoggedIn = true;
-      notifyListeners();
-    } else {
-      _errorMessage = "An error occurred while signing in.";
+    try {
+      UserModel? signedInUser = await _authService.signInWithEmailAndPassword(context, email, password);
+      if (signedInUser != null) {
+        _user = signedInUser;
+        _errorMessage = null;
+        _isLoggedIn = true;
+        notifyListeners();
+      } else {
+        _errorMessage = "Invalid email or password.";
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = "An error occurred: $e";
       notifyListeners();
     }
   }
 
   Future<void> signOut(BuildContext context) async {
-    await _authService.signOut(context);
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-    _isLoggedIn = false;
-    notifyListeners();
+    try {
+      await _authService.signOut(context);
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      _isLoggedIn = false;
+      _user = null; // Clear the user object
+      _errorMessage = null;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = "An error occurred: $e";
+      notifyListeners();
+    }
   }
 
   String _hashPassword(String password) {
-    // Add your password hashing logic here
+    // Implement your password hashing algorithm here
     return password; // For demonstration, returning the password as is
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hotel/home.dart';
 import 'package:hotel/presentation/authentication/screens/login_screen.dart';
 import 'package:hotel/presentation/authentication/screens/profile_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
 import 'package:hotel/presentation/authentication/screens/booking_screen.dart';
 import 'package:hotel/presentation/authentication/screens/forgot_screen.dart';
+import 'package:hotel/presentation/dashboard/bookedby.dart';
 import 'package:hotel/presentation/home/home_screen.dart';
 import 'core/theme/theme.dart';
 import 'firebase_options.dart';
@@ -51,12 +53,13 @@ class Hotel extends StatelessWidget {
       initialRoute: '/', // Set the initial route to '/'
       routes: {
         '/': (context) => WelcomeScreen(), // Home page route
+        '/bookedby': (context) =>BookingDisplayScreen (), // Home page route
         '/home': (context) =>  MyHomePage(title: 'Hotel Page'), // Home page route
         // '/homebar': (context) =>  MyHomePage1(title: 'Hotel Page'), // Home page route
         '/signUp': (context) => const SignUpScreen(), // SignUp screen route
         '/login': (context) => const LoginScreen(), // Login screen route
         // '/booking': (context) => const BookingScreen(), // Booking screen route
-        //  // Profile screen route
+        // '/profile': (context) => const ProfileScreen(), // Profile screen route
         '/forgotPassword': (context) => ForgotPasswordScreen(), // Forgot password screen route
         '/admin': (context) => AdminScreen(), // Admin screen route
         '/addHotels': (context) => const AddHotelScreen(), // Add hotels screen route
