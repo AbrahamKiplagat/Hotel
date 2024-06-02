@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hotel/presentation/dashboard/no_bookings.dart';
+// Import the NoBookingsScreen class
 
 class BookingDisplayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Get the current user
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -21,13 +22,13 @@ class BookingDisplayScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bookings'),
+        title: Text('Your Bookings'),
       ),
-      backgroundColor: Colors.purple[100], // Set the background color here
+      backgroundColor: Colors.purple[100],
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('room_bookings')
-            .where('bookedBy', isEqualTo: user.email) // Filter by current user's email
+            .where('bookedBy', isEqualTo: user.email) // Change this to 'uid' if using UID
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -43,9 +44,7 @@ class BookingDisplayScreen extends StatelessWidget {
           }
 
           if (snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Text('No bookings available.'),
-            );
+            return NoBookingsScreen(); // Display NoBookingsScreen if no bookings available
           }
 
           return ListView.builder(
@@ -57,7 +56,6 @@ class BookingDisplayScreen extends StatelessWidget {
               var roomType = booking['roomType'];
               var timestamp = booking['timestamp'];
 
-              // Convert timestamp to DateTime object
               var dateTime = (timestamp as Timestamp).toDate();
 
               return Card(
@@ -72,17 +70,11 @@ class BookingDisplayScreen extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8.0),
-                      Text(
-                        'Rate: $rate',
-                      ),
+                      Text('Rate: $rate'),
                       SizedBox(height: 8.0),
-                      Text(
-                        'Room Type: $roomType',
-                      ),
+                      Text('Room Type: $roomType'),
                       SizedBox(height: 8.0),
-                      Text(
-                        'Timestamp: $dateTime',
-                      ),
+                      Text('Timestamp: $dateTime'),
                     ],
                   ),
                 ),
