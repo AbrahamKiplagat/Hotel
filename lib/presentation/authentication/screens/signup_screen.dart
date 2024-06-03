@@ -17,6 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _displayNameController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
   File? _imageFile;
 
   Future<void> _getImage() async {
@@ -42,10 +43,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String displayName = _displayNameController.text.trim();
-    String phoneNumber = _displayNameController.text.trim();
+    String phoneNumber = _phoneNumberController.text.trim();
 
     try {
-      await context.read<AuthProvider>().createUserWithEmailAndPassword(context, email, password, displayName,phoneNumber);
+      await context.read<AuthProvider>().createUserWithEmailAndPassword(context, email, password, displayName, phoneNumber);
       if (context.read<AuthProvider>().isLoggedIn) {
         Navigator.pushReplacement(
           context,
@@ -63,10 +64,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(
         title: const Text('Sign Up'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/home.png'), // Ensure this path is correct
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // Sign up form
+          SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
@@ -81,6 +92,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: _imageFile == null ? Icon(Icons.add_a_photo, size: 50) : null,
                       ),
                     ),
+                    SizedBox(height: 16),
                     TextFormField(
                       controller: _displayNameController,
                       validator: (value) {
@@ -93,6 +105,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Full Name",
                         labelText: 'Full Name',
                         prefixIcon: Icon(Icons.person),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: _phoneNumberController,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your phone number';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        hintText: "Phone Number",
+                        labelText: 'Phone Number',
+                        prefixIcon: Icon(Icons.phone),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(),
                       ),
                     ),
                     SizedBox(height: 16),
@@ -103,6 +137,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Email",
                         labelText: 'Email',
                         prefixIcon: Icon(Icons.mail),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(),
                       ),
                     ),
                     SizedBox(height: 16),
@@ -113,24 +150,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Password",
                         labelText: 'Password',
                         prefixIcon: Icon(Icons.visibility_off),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(),
                       ),
                     ),
+                    SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _signUpUser,
-                      child: const Text('Sign Up'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        backgroundColor: Colors.purple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/login');
                       },
-                      child: const Text('Already have an account? Login'),
+                      child: const Text(
+                        'Already have an account? Login',
+                        style: TextStyle(color: Colors.purple),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
