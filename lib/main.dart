@@ -52,8 +52,7 @@ class Hotel extends StatelessWidget {
       theme: AppTheme.theme,
       initialRoute: '/', // Set the initial route to '/'
       routes: {
-        // '/': (context) => WelcomeScreen(), // Home page route
-        '/': (context) => MyHomePage(title: 'Hotel Page'), // Home page route
+        '/': (context) => WelcomeScreen(), // Home page route
         '/bookedby': (context) =>BookingDisplayScreen (), // Home page route
         '/home': (context) =>  MyHomePage(title: 'Hotel Page'), // Home page route
         // '/homebar': (context) =>  MyHomePage1(title: 'Hotel Page'), // Home page route

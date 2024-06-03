@@ -16,7 +16,7 @@ class BottomBar extends StatelessWidget {
   });
   final List<Widget> currentTab = [
   MyHomePage(title: 'Hotel Page'),
-  const SearchScreen(),
+  // const SearchScreen(),
   const ProfileScreen(),
    BookingDisplayScreen(), // Placeholder for displaying bookings
 ];
@@ -44,10 +44,10 @@ class BottomBar extends StatelessWidget {
                   icon: Icon(Icons.home),
                   label: 'Home',
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.search),
-                  label: 'Search',
-                ),
+                // BottomNavigationBarItem(
+                //   icon: Icon(Icons.search),
+                //   label: 'Search',
+                // ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),
                   label: 'Profile',
