@@ -70,7 +70,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/home.png'), // Ensure this path is correct
+                image: AssetImage('assets/images/hotel1.png'), // Ensure this path is correct
                 fit: BoxFit.cover,
               ),
             ),

@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/HOME2.png"), // Make sure the path is correct
+                image: AssetImage("assets/images/hotel.png"), // Make sure the path is correct
                 fit: BoxFit.cover,
               ),
             ),
