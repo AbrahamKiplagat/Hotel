@@ -6,12 +6,42 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../domain/models/user_model.dart';
 import '../../providers/hotel_provider.dart';
 
-class MyHomePage extends StatelessWidget {
-  final pageController = PageController();
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class MyHomePage extends StatefulWidget {
   final String title;
 
-  MyHomePage({required this.title, super.key});
+  MyHomePage({required this.title, Key? key}) : super(key: key);
 
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final pageController = PageController();
+  String? userImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserDetails();
+  }
+
+  Future<void> _fetchUserDetails() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          userImageUrl = userDoc.get('imagePath') ?? '';
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
@@ -35,10 +65,15 @@ class MyHomePage extends StatelessWidget {
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                       ),
-                      child: Image.network(
-                        "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
-                        fit: BoxFit.cover,
-                      ),
+                      child: userImageUrl != null && userImageUrl!.isNotEmpty
+                          ? Image.network(
+                              userImageUrl!,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png",
+                              fit: BoxFit.cover,
+                            ),
                     ),
                     Expanded(
                       flex: 1,

@@ -4,8 +4,8 @@ class NoBookingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container( // Wrap Scaffold with Container
-        color: Colors.purple[100], // Set background color
+      body: Container(
+        color: Colors.purple[100],
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

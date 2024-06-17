@@ -67,3 +67,15 @@ class Hotel extends StatelessWidget {
     );
   }
 }
+/*** 
+ * add mpesa daraja 
+ * send money
+ * i think paid screen has to be created or a tick on the booked items
+ * admin to see who has bought items and paid or not paid
+ * also their should be a button on the screen to display pay now.
+ * one should edit their phone-number, 
+ * add the ksh amount on the hotel 
+ * add total number of people to visit the hotel,
+ * so their is calculation for total number of people * the booking amount.
+ * 
+*/

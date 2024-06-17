@@ -13,6 +13,14 @@ class BookingsProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  Map<String, double> get totalAmountByEmail {
+    Map<String, double> totals = {};
+    for (var booking in _bookings) {
+      totals[booking.bookedBy] = (totals[booking.bookedBy] ?? 0) + booking.rate;
+    }
+    return totals;
+  }
+
   void fetchBookings() async {
     try {
       _isLoading = true;

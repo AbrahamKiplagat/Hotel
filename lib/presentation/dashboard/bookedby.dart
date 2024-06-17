@@ -1,11 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/presentation/dashboard/no_bookings.dart';
 import 'package:hotel/providers/bookings_provider.dart';
+import 'package:hotel/domain/services/mpesa_service.dart';
 import 'package:hotel/domain/models/booking_models.dart';
 
 class BookingDisplayScreen extends StatelessWidget {
+  final MpesaService mpesaService = MpesaService();
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -33,17 +35,19 @@ class BookingDisplayScreen extends StatelessWidget {
               return NoBookingsScreen();
             }
 
-            return ListView.builder(
-              itemCount: bookingsProvider.bookings.length,
-              itemBuilder: (context, index) {
-                var booking = bookingsProvider.bookings[index];
-                return BookingCard(
-                  bookedBy: booking.bookedBy,
-                  rate: booking.rate,
-                  roomType: booking.roomType,
-                  timestamp: booking.timestamp,
+            var totalAmounts = bookingsProvider.totalAmountByEmail;
+
+            return ListView(
+              children: totalAmounts.entries.map((entry) {
+                return TotalAmountCard(
+                  email: entry.key,
+                  totalAmount: entry.value,
+                  bookings: bookingsProvider.bookings
+                      .where((booking) => booking.bookedBy == entry.key)
+                      .toList(),
+                  mpesaService: mpesaService,
                 );
-              },
+              }).toList(),
             );
           },
         ),
@@ -52,23 +56,21 @@ class BookingDisplayScreen extends StatelessWidget {
   }
 }
 
-class BookingCard extends StatelessWidget {
-  final String bookedBy;
-  final double rate;
-  final String roomType;
-  final Timestamp timestamp;
+class TotalAmountCard extends StatelessWidget {
+  final String email;
+  final double totalAmount;
+  final List<Booking> bookings;
+  final MpesaService mpesaService;
 
-  const BookingCard({
-    required this.bookedBy,
-    required this.rate,
-    required this.roomType,
-    required this.timestamp,
+  const TotalAmountCard({
+    required this.email,
+    required this.totalAmount,
+    required this.bookings,
+    required this.mpesaService,
   });
 
   @override
   Widget build(BuildContext context) {
-    final dateTime = timestamp.toDate();
-
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Padding(
@@ -77,18 +79,95 @@ class BookingCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Booked by: $bookedBy',
+              'Email: $email',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.0),
-            Text('Rate: $rate'),
+            Text('Total Amount: $totalAmount'),
+            ...bookings.map((booking) {
+              final dateTime = booking.timestamp.toDate();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8.0),
+                  Text('Room Type: ${booking.roomType}'),
+                  Text('Rate: ${booking.rate}'),
+                  Text('Timestamp: $dateTime'),
+                ],
+              );
+            }).toList(),
             SizedBox(height: 8.0),
-            Text('Room Type: $roomType'),
-            SizedBox(height: 8.0),
-            Text('Timestamp: $dateTime'),
+            ElevatedButton(
+              onPressed: () async {
+                await _showPaymentDialog(context, totalAmount.toString());
+              },
+              child: Text('Pay Now'),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _showPaymentDialog(BuildContext context, String amount) async {
+    TextEditingController phoneNumberController = TextEditingController();
+    TextEditingController pinController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Enter Payment Details'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: phoneNumberController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(labelText: 'Phone Number'),
+              ),
+              SizedBox(height: 16.0),
+              Text('Amount: $amount'),
+              TextField(
+                controller: pinController,
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'M-Pesa PIN'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String phoneNumber = phoneNumberController.text;
+                String pin = pinController.text;
+                _initiatePayment(context, phoneNumber, double.parse(amount));
+              },
+              child: Text('Pay'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _initiatePayment(BuildContext context, String phoneNumber, double amount) async {
+    try {
+      await mpesaService.initiateSTKPush(
+        phoneNumber: phoneNumber,
+        amount: amount,
+        // recipientPhoneNumber: '0113345836', // Change to your desired recipient phone number
+      );
+      Navigator.pop(context); // Close the dialog after successful payment
+      // Show success message or navigate to a success screen
+    } catch (e) {
+      // Handle payment failure
+    }
   }
 }

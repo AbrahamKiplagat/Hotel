@@ -35,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  Future<void> _signUpUser() async {
+  Future<void> _signUpUser(BuildContext context) async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -46,8 +46,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String phoneNumber = _phoneNumberController.text.trim();
 
     try {
-      await context.read<AuthProvider>().createUserWithEmailAndPassword(context, email, password, displayName, phoneNumber);
-      if (context.read<AuthProvider>().isLoggedIn) {
+      final authProvider = context.read<AuthProvider>();
+      await authProvider.createUserWithEmailAndPassword(
+        context, email, password, displayName, phoneNumber, _imageFile,
+      );
+      if (authProvider.isLoggedIn) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => BottomBar()),
@@ -55,6 +58,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (e) {
       print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
@@ -66,16 +72,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       body: Stack(
         children: [
-          // Background image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/hotel1.png'), // Ensure this path is correct
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Sign up form
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -92,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: _imageFile == null ? Icon(Icons.add_a_photo, size: 50) : null,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _displayNameController,
                       validator: (value) {
@@ -110,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _phoneNumberController,
                       keyboardType: TextInputType.phone,
@@ -129,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -142,7 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
@@ -155,11 +159,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: _signUpUser,
+                      onPressed: () => _signUpUser(context),
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                         backgroundColor: Colors.purple,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

@@ -1,41 +1,39 @@
-enum UserRole { admin, user }
+import 'package:flutter/material.dart';
 
 class UserModel {
   String uid;
-  String? email; // Make email nullable
-  String? displayName; // Make displayName nullable
-  String? imagePath;
-  String? phoneNumber; // Make phoneNumber nullable
-  String? password; // Make password nullable
+  String? email;
+  String? displayName;
+  String imagePath; // Ensure imagePath is always a non-nullable string
+  String? phoneNumber;
+  String? password;
 
   UserModel({
     required this.uid,
     this.email,
     this.displayName,
-    this.imagePath,
+    this.imagePath = '', // Initialize imagePath with an empty string
     this.phoneNumber,
     this.password,
   });
 
-  // Serialize data to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': uid,
       'email': email,
       'displayName': displayName,
-      'imagePath': imagePath,
+      'imagePath': imagePath, // Ensure imagePath is always included in the JSON
       'phoneNumber': phoneNumber,
       'password': password,
     };
   }
 
-  // Deserialize JSON data to object received from cloud firestore
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       uid: json['id'],
       email: json['email'],
       displayName: json['displayName'],
-      imagePath: json['imagePath'],
+      imagePath: json['imagePath'] ?? '', // Convert null to empty string
       phoneNumber: json['phoneNumber'],
       password: json['password'],
     );

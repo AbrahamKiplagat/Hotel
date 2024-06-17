@@ -1,70 +1,122 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:hotel/domain/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hotel/domain/models/user_model.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final AuthService _authService = AuthService();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isLoggedIn = false;
   UserModel? _user;
   String? _errorMessage;
-  bool _isLoggedIn = false;
 
+  bool get isLoggedIn => _isLoggedIn;
   UserModel? get user => _user;
   String? get errorMessage => _errorMessage;
-  bool get isLoggedIn => _isLoggedIn;
 
-  Future<void> createUserWithEmailAndPassword(BuildContext context, String email, String password, String displayName, String phoneNumber) async {
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  Future<void> createUserWithEmailAndPassword(
+    BuildContext context,
+    String email,
+    String password,
+    String displayName,
+    String phoneNumber,
+    File? imageFile,
+  ) async {
     try {
       final hashedPassword = _hashPassword(password);
-      final userCredential = await _authService.createUserWithEmailAndPassword(context, email, hashedPassword, displayName, phoneNumber);
-      if (userCredential != null) {
-        _user = userCredential;
-        _errorMessage = null;
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      final user = userCredential.user;
+      
+      if (user != null) {
+        String? imagePath;
+        if (imageFile != null) {
+          imagePath = await _uploadImageAndGetUrl(user.uid, imageFile);
+        }
+        
+        final userModel = UserModel(
+          uid: user.uid,
+          email: user.email,
+          displayName: displayName,
+          phoneNumber: phoneNumber,
+          password: hashedPassword,
+          imagePath: imagePath ?? '', // Provide a default value if imagePath is null
+        );
+        
+        await _firestore.collection('users').doc(user.uid).set(userModel.toJson());
+
         _isLoggedIn = true;
-        notifyListeners();
-      } else {
-        _errorMessage = "An error occurred while creating the user.";
+        _user = userModel;
+        _errorMessage = null;
+
         notifyListeners();
       }
     } catch (e) {
       _errorMessage = "An error occurred: $e";
       notifyListeners();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
   Future<void> signInWithEmailAndPassword(BuildContext context, String email, String password) async {
     try {
-      UserModel? signedInUser = await _authService.signInWithEmailAndPassword(context, email, password);
-      if (signedInUser != null) {
-        _user = signedInUser;
-        _errorMessage = null;
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      final user = userCredential.user;
+
+      if (user != null) {
+        final userData = await _firestore.collection('users').doc(user.uid).get();
+        final userModel = UserModel.fromJson(userData.data()!);
+
         _isLoggedIn = true;
-        notifyListeners();
-      } else {
-        _errorMessage = "Invalid email or password.";
+        _user = userModel;
+        _errorMessage = null;
+
         notifyListeners();
       }
     } catch (e) {
       _errorMessage = "An error occurred: $e";
       notifyListeners();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
   Future<void> signOut(BuildContext context) async {
     try {
-      await _authService.signOut(context);
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      await _firebaseAuth.signOut();
       _isLoggedIn = false;
-      _user = null; // Clear the user object
+      _user = null;
       _errorMessage = null;
       notifyListeners();
     } catch (e) {
-      _errorMessage = "An error occurred: $e";
-      notifyListeners();
+      print('Error signing out: $e');
     }
   }
 
-  String _hashPassword(String password) {
-    // Implement your password hashing algorithm here
-    return password; // For demonstration, returning the password as is
+  Future<String?> _uploadImageAndGetUrl(String userId, File imageFile) async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      String fileName = '${DateTime.now().millisecondsSinceEpoch}_${userId}_${imageFile.path.split('/').last}';
+      Reference ref = storage.ref().child('users').child(userId).child(fileName);
+      UploadTask uploadTask = ref.putFile(imageFile);
+      await uploadTask.whenComplete(() => null);
+      String url = await ref.getDownloadURL();
+      return url;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
   }
 }
