@@ -49,9 +49,10 @@ class AuthProvider extends ChangeNotifier {
           displayName: displayName,
           phoneNumber: phoneNumber,
           password: hashedPassword,
-          imagePath: imagePath ?? '', // Provide a default value if imagePath is null
+          imagePath: imagePath ?? 'assets/images/home.png', // Provide a default value if imagePath is null
         );
         
+        // Save user data to Firestore
         await _firestore.collection('users').doc(user.uid).set(userModel.toJson());
 
         _isLoggedIn = true;

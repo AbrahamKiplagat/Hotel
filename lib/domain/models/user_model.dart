@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-
 class UserModel {
   String uid;
   String? email;
   String? displayName;
-  String imagePath; // Ensure imagePath is always a non-nullable string
+  String? imagePath;
   String? phoneNumber;
   String? password;
 
@@ -12,7 +10,7 @@ class UserModel {
     required this.uid,
     this.email,
     this.displayName,
-    this.imagePath = '', // Initialize imagePath with an empty string
+    this.imagePath,
     this.phoneNumber,
     this.password,
   });
@@ -22,7 +20,7 @@ class UserModel {
       'id': uid,
       'email': email,
       'displayName': displayName,
-      'imagePath': imagePath, // Ensure imagePath is always included in the JSON
+      'imagePath': imagePath,
       'phoneNumber': phoneNumber,
       'password': password,
     };
@@ -33,7 +31,7 @@ class UserModel {
       uid: json['id'],
       email: json['email'],
       displayName: json['displayName'],
-      imagePath: json['imagePath'] ?? '', // Convert null to empty string
+      imagePath: json['imagePath'],
       phoneNumber: json['phoneNumber'],
       password: json['password'],
     );
