@@ -22,10 +22,8 @@ This is a hotel booking application built with Flutter. It allows users to searc
 4. Run the app: `flutter run`
 
 ## Screenshots
-
-![Hotel Search](screenshots/hotel_search.png)
-![Hotel Details](screenshots/hotel_details.png)
-![Booking](screenshots/booking.png)
+![bookings](https://github.com/AbrahamKiplagat/Hotel/assets/110113737/c5eded74-e35f-4656-966f-e00207c263b7)
+![user](https://github.com/AbrahamKiplagat/Hotel/assets/110113737/d060f5f1-407c-4588-9079-8d1c09302f0f)
 
 ## Contributing
 
