@@ -46,7 +46,7 @@ class MpesaService {
         'PartyA': phoneNumber,
         'PartyB': shortCode,
         'PhoneNumber': phoneNumber,
-        'CallBackURL': 'https://f96f-102-135-174-103.ngrok-free.app/LIPA_NA_MPESA/',
+        'CallBackURL': 'https://your-callback-url.com/callback',
         'AccountReference': 'HotelBooking123',
         'TransactionDesc': 'Hotel Room Payment'
       }),

@@ -18,6 +18,7 @@ import 'presentation/authentication/screens/admin_screen.dart';
 import 'providers/admin_provider.dart';
 import 'providers/hotel_provider.dart'; // Import the HotelProvider
 
+import 'package:hotel/providers/bookings_provider.dart'; 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -34,6 +35,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => AdminProvider()),
         // Provider for managing hotel-related state.
         ChangeNotifierProvider(create: (context) => HotelProvider()), // Provide the HotelProvider
+
+        ChangeNotifierProvider(create: (context) => BookingsProvider()),
       ],
       // Hotel is the root widget of our application.
       child: const Hotel(),

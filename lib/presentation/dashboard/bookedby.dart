@@ -35,19 +35,32 @@ class BookingDisplayScreen extends StatelessWidget {
               return NoBookingsScreen();
             }
 
-            var totalAmounts = bookingsProvider.totalAmountByEmail;
-
-            return ListView(
-              children: totalAmounts.entries.map((entry) {
-                return TotalAmountCard(
-                  email: entry.key,
-                  totalAmount: entry.value,
-                  bookings: bookingsProvider.bookings
-                      .where((booking) => booking.bookedBy == entry.key)
-                      .toList(),
-                  mpesaService: mpesaService,
-                );
-              }).toList(),
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Total Amount by Email:',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: bookingsProvider.totalAmountByEmail.length,
+                    itemBuilder: (context, index) {
+                      var entry = bookingsProvider.totalAmountByEmail.entries.elementAt(index);
+                      return TotalAmountCard(
+                        email: entry.key,
+                        totalAmount: entry.value,
+                        bookings: bookingsProvider.bookings
+                            .where((booking) => booking.bookedBy == entry.key)
+                            .toList(),
+                        mpesaService: mpesaService,
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -111,7 +124,6 @@ class TotalAmountCard extends StatelessWidget {
 
   Future<void> _showPaymentDialog(BuildContext context, String amount) async {
     TextEditingController phoneNumberController = TextEditingController();
-    TextEditingController pinController = TextEditingController();
 
     await showDialog(
       context: context,
@@ -128,12 +140,6 @@ class TotalAmountCard extends StatelessWidget {
               ),
               SizedBox(height: 16.0),
               Text('Amount: $amount'),
-              TextField(
-                controller: pinController,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                decoration: InputDecoration(labelText: 'M-Pesa PIN'),
-              ),
             ],
           ),
           actions: [
@@ -146,7 +152,6 @@ class TotalAmountCard extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 String phoneNumber = phoneNumberController.text;
-                String pin = pinController.text;
                 _initiatePayment(context, phoneNumber, double.parse(amount));
               },
               child: Text('Pay'),
@@ -158,16 +163,16 @@ class TotalAmountCard extends StatelessWidget {
   }
 
   Future<void> _initiatePayment(BuildContext context, String phoneNumber, double amount) async {
+    // Implement your payment initiation logic here
     try {
-      await mpesaService.initiateSTKPush(
-        phoneNumber: phoneNumber,
-        amount: amount,
-        // recipientPhoneNumber: '0113345836', // Change to your desired recipient phone number
-      );
+      // Example code to initiate payment
+      // Replace with your actual payment initiation code
+      print('Payment initiated for $amount to $phoneNumber');
       Navigator.pop(context); // Close the dialog after successful payment
       // Show success message or navigate to a success screen
     } catch (e) {
       // Handle payment failure
+      print('Error initiating payment: $e');
     }
   }
 }
