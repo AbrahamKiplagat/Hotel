@@ -3,10 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hotel/home.dart';
 import 'package:hotel/presentation/authentication/screens/login_screen.dart';
-import 'package:hotel/presentation/authentication/screens/profile_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
-
 import 'package:hotel/presentation/authentication/screens/forgot_screen.dart';
+import 'package:hotel/presentation/dashboard/AdminBookingDisplayScreen';
 import 'package:hotel/presentation/dashboard/bookedby.dart';
 import 'package:hotel/presentation/home/home_screen.dart';
 import 'core/theme/theme.dart';
@@ -53,6 +52,7 @@ class Hotel extends StatelessWidget {
       initialRoute: '/', // Set the initial route to '/'
       routes: {
         '/': (context) => WelcomeScreen(), // Home page route
+        '/userdetails': (context) => AdminBookingDisplayScreen(), // Home page route
         '/bookedby': (context) =>BookingDisplayScreen (), // Home page route
         '/home': (context) =>  MyHomePage(title: 'Hotel Page'), // Home page route
         // '/homebar': (context) =>  MyHomePage1(title: 'Hotel Page'), // Home page route
@@ -72,10 +72,11 @@ class Hotel extends StatelessWidget {
  * send money
  * i think paid screen has to be created or a tick on the booked items
  * admin to see who has bought items and paid or not paid
- * also their should be a button on the screen to display pay now.
- * one should edit their phone-number, 
- * add the ksh amount on the hotel 
  * add total number of people to visit the hotel,
  * so their is calculation for total number of people * the booking amount.
+ * add booking dates from tommorows dates
+ * add a screen for admin to see what people has bought
+ * add 0.50ksh deduction  on a payed amount to your account
+ * add a tests to your project to display if your project can complete all the transaction. 
  * 
 */

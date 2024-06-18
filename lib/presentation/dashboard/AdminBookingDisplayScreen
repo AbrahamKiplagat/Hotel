@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+
+class AdminBookingDisplayScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Admin Booking Overview'),
+      ),
+      backgroundColor: Colors.purple[100],
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columns: [
+            DataColumn(label: Text('Hotel')),
+            DataColumn(label: Text('Room Type')),
+            DataColumn(label: Text('Rate')),
+            DataColumn(label: Text('Total Amount')),
+            DataColumn(label: Text('Phone Number')),
+            DataColumn(label: Text('Email')),
+            DataColumn(label: Text('Timestamp')),
+            DataColumn(label: Text('Paid')),
+          ],
+          rows: List.generate(10, (index) {
+            // Mock data for demonstration
+            String hotelName = 'Hotel ${index + 1}';
+            String roomType = 'Room Type ${index % 3 + 1}';
+            double rate = (index + 1) * 50.0;
+            double totalAmount = (index + 1) * 150.0;
+            String phoneNumber = '1234567890';
+            String email = 'user${index + 1}@example.com';
+            DateTime timestamp = DateTime.now();
+            bool isPaid = index % 2 == 0;
+
+            return DataRow(
+              cells: [
+                DataCell(Text(hotelName)),
+                DataCell(Text(roomType)),
+                DataCell(Text(rate.toStringAsFixed(2))), // Convert to String
+                DataCell(Text(totalAmount.toStringAsFixed(2))), // Convert to String
+                DataCell(Text(phoneNumber)),
+                DataCell(Text(email)),
+                DataCell(Text(timestamp.toString())),
+                DataCell(Text(isPaid ? 'Yes' : 'No')),
+              ],
+            );
+          }),
+        ),
+      ),
+    );
+  }
+}

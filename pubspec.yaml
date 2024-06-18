@@ -51,6 +51,7 @@ dependencies:
   mpesadaraja: ^0.1.5
   http: ^0.13.6
   firebase_storage: ^11.7.7
+  mockito: ^5.4.4
 
 dev_dependencies:
   flutter_test:
