@@ -1,13 +1,15 @@
 const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Import CORS package
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors()); // Enable CORS for all routes
 
 const consumerKey = 'CGQThG0NffJzBDIRqxfLYpFWaS0FkqNbSN8CYlPyshEnQBO6';
 const consumerSecret = 'dftK65sJvLT6XfXOxeZkAYKME79ycyWVT3U2srnXXsNODEAm7JeYyL9dlRujdwNA';
-const shortCode = '174379';//demo code
+const shortCode = '174379'; // demo code
 const lipaNaMpesaOnlineUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 const tokenUrl = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 const passKey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';

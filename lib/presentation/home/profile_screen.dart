@@ -7,7 +7,6 @@ import 'package:hotel/presentation/home/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:hotel/providers/auth_provider.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-
 import 'package:hotel/domain/models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -23,18 +22,25 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Profile'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RichText(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.purple,Colors.yellow], // Replace with your desired colors
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RichText(
                 text: TextSpan(
                   text: 'Hi,  ',
                   style: const TextStyle(
-                    color: Colors.cyan,
+                    color: Colors.white,
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
                   ),
@@ -42,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
                     TextSpan(
                       text: user?.email ?? '',
                       style: const TextStyle(
-                        color: Colors.cyan,
+                        color: Colors.white,
                         fontSize: 25,
                         fontWeight: FontWeight.w600,
                       ),
@@ -54,61 +60,53 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
-              // Assuming TextWidget is a custom widget to display text
-              // TextWidget(
-              //   text: user?.email ?? '',
-              //   color: Colors.cyan,
-              //   textSize: 18,
-              // ),
-              const Divider(
-                thickness: 2,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              _listTiles(
-                title: 'Address 2',
-                subtitle: 'My subtitle',
-                icon: IconlyLight.profile,
-                onPressed: () {},
-                color: Colors.cyan,
-              ),
-              _listTiles(
-                title: 'Bookings',
-                icon: Icons.book,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BookingDisplayScreen()),
-                  );
-                },
-                color: Colors.cyan,
-              ),
-              _listTiles(
-                title: 'Viewed',
-                icon: IconlyLight.show,
-                onPressed: () {},
-                color: Colors.cyan,
-              ),
-              _listTiles(
-                title: 'Forget password',
-                icon: IconlyLight.unlock,
-                onPressed: () {},
-                color: Colors.cyan,
-              ),
-              _listTiles(
-                title: 'Logout',
-                icon: IconlyLight.logout,
-                onPressed: () {
-                  authProvider.signOut(context);
-                },
-                color: Colors.cyan,
-              ),
-            ],
-          ),
+            ),
+            const Divider(
+              thickness: 2,
+              color: Colors.white,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            _listTiles(
+              title: 'Address 2',
+              subtitle: 'My subtitle',
+              icon: IconlyLight.profile,
+              onPressed: () {},
+              color: Colors.white,
+            ),
+            _listTiles(
+              title: 'Bookings',
+              icon: Icons.book,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BookingDisplayScreen()),
+                );
+              },
+              color: Colors.white,
+            ),
+            _listTiles(
+              title: 'Viewed',
+              icon: IconlyLight.show,
+              onPressed: () {},
+              color: Colors.white,
+            ),
+            _listTiles(
+              title: 'Forget password',
+              icon: IconlyLight.unlock,
+              onPressed: () {},
+              color: Colors.white,
+            ),
+            _listTiles(
+              title: 'Logout',
+              icon: IconlyLight.logout,
+              onPressed: () {
+                authProvider.signOut(context);
+              },
+              color: Colors.white,
+            ),
+          ],
         ),
       ),
     );
@@ -132,8 +130,8 @@ class ProfileScreen extends StatelessWidget {
         color: color,
         textSize: 18,
       ),
-      leading: Icon(icon),
-      trailing: const Icon(IconlyLight.arrowRight2),
+      leading: Icon(icon, color: color),
+      trailing: const Icon(IconlyLight.arrowRight2, color: Colors.white),
       onTap: () {
         onPressed();
       },

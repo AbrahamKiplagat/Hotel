@@ -5,7 +5,7 @@ import 'package:hotel/home.dart';
 import 'package:hotel/presentation/authentication/screens/login_screen.dart';
 import 'package:hotel/presentation/authentication/screens/profile_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
-import 'package:hotel/presentation/authentication/screens/booking_screen.dart';
+
 import 'package:hotel/presentation/authentication/screens/forgot_screen.dart';
 import 'package:hotel/presentation/dashboard/bookedby.dart';
 import 'package:hotel/presentation/home/home_screen.dart';
@@ -18,13 +18,12 @@ import 'presentation/authentication/screens/admin_screen.dart';
 import 'providers/admin_provider.dart';
 import 'providers/hotel_provider.dart'; // Import the HotelProvider
 
-import 'package:hotel/providers/bookings_provider.dart'; 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-//
+
   runApp(
     MultiProvider(
       // MultiProvider allows us to combine multiple providers into a single widget tree.
@@ -35,8 +34,6 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => AdminProvider()),
         // Provider for managing hotel-related state.
         ChangeNotifierProvider(create: (context) => HotelProvider()), // Provide the HotelProvider
-
-        ChangeNotifierProvider(create: (context) => BookingsProvider()),
       ],
       // Hotel is the root widget of our application.
       child: const Hotel(),
