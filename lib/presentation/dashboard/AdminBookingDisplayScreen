@@ -1,51 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class AdminBookingDisplayScreen extends StatelessWidget {
+  Future<List<Map<String, dynamic>>> fetchUsers() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+
+    List<Map<String, dynamic>> usersList = [];
+    querySnapshot.docs.forEach((doc) {
+      usersList.add(doc.data());
+    });
+
+    return usersList;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRoomBookings() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+        .collection('room_bookings')
+        .get();
+
+    List<Map<String, dynamic>> roomBookingsList = [];
+    querySnapshot.docs.forEach((doc) {
+      roomBookingsList.add(doc.data());
+    });
+
+    return roomBookingsList;
+  }
+
+  String formatTimestamp(Timestamp timestamp) {
+    DateTime dateTime = timestamp.toDate().toUtc().add(Duration(hours: 3)); // Convert to EAT
+    DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    return dateFormat.format(dateTime) + ' EAT';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Booking Overview'),
+        title: Text('Users Bookings'),
       ),
       backgroundColor: Colors.purple[100],
-      body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columns: [
-            DataColumn(label: Text('Hotel')),
-            DataColumn(label: Text('Room Type')),
-            DataColumn(label: Text('Rate')),
-            DataColumn(label: Text('Total Amount')),
-            DataColumn(label: Text('Phone Number')),
-            DataColumn(label: Text('Email')),
-            DataColumn(label: Text('Timestamp')),
-            DataColumn(label: Text('Paid')),
-          ],
-          rows: List.generate(10, (index) {
-            // Mock data for demonstration
-            String hotelName = 'Hotel ${index + 1}';
-            String roomType = 'Room Type ${index % 3 + 1}';
-            double rate = (index + 1) * 50.0;
-            double totalAmount = (index + 1) * 150.0;
-            String phoneNumber = '1234567890';
-            String email = 'user${index + 1}@example.com';
-            DateTime timestamp = DateTime.now();
-            bool isPaid = index % 2 == 0;
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: fetchUsers(), // Fetch users data
+        builder: (context, usersSnapshot) {
+          if (usersSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (usersSnapshot.hasError) {
+            return Center(child: Text('Error: ${usersSnapshot.error}'));
+          }
 
-            return DataRow(
-              cells: [
-                DataCell(Text(hotelName)),
-                DataCell(Text(roomType)),
-                DataCell(Text(rate.toStringAsFixed(2))), // Convert to String
-                DataCell(Text(totalAmount.toStringAsFixed(2))), // Convert to String
-                DataCell(Text(phoneNumber)),
-                DataCell(Text(email)),
-                DataCell(Text(timestamp.toString())),
-                DataCell(Text(isPaid ? 'Yes' : 'No')),
-              ],
-            );
-          }),
-        ),
+          // Fetch room bookings data
+          return FutureBuilder<List<Map<String, dynamic>>>(
+            future: fetchRoomBookings(),
+            builder: (context, roomBookingsSnapshot) {
+              if (roomBookingsSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (roomBookingsSnapshot.hasError) {
+                return Center(child: Text('Error: ${roomBookingsSnapshot.error}'));
+              }
+
+              // Assuming snapshots contain lists of user and room bookings data
+              List<Map<String, dynamic>> users = usersSnapshot.data ?? [];
+              List<Map<String, dynamic>> roomBookings = roomBookingsSnapshot.data ?? [];
+
+              // Build DataTable with combined data
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text('User', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(label: Text('Room Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(label: Text('Rate', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
+                  ],
+                  rows: roomBookings.map((booking) {
+                    // Find corresponding user details for each booking
+                    var user = users.firstWhere(
+                      (user) => user['email'] == booking['bookedBy'],
+                      orElse: () => {'displayName': 'Unknown User', 'email': booking['bookedBy'], 'phoneNumber': 'N/A'},
+                    );
+
+                    return DataRow(cells: [
+                      DataCell(Text(user['displayName'] ?? 'Unknown')),
+                      DataCell(Text(user['email'] ?? 'Unknown')),
+                      DataCell(Text(user['phoneNumber'] ?? 'N/A')),
+                      DataCell(Text(booking['roomType'] ?? 'Unknown')),
+                      DataCell(Text(booking['rate']?.toString() ?? '0')),
+                      DataCell(Text(formatTimestamp(booking['timestamp']))),
+                    ]);
+                  }).toList(),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
