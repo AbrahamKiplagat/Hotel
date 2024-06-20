@@ -5,6 +5,7 @@ class UserModel {
   String? imagePath;
   String? phoneNumber;
   String? password;
+  String? fullName; // Add fullName field
 
   UserModel({
     required this.uid,
@@ -13,6 +14,7 @@ class UserModel {
     this.imagePath,
     this.phoneNumber,
     this.password,
+    this.fullName,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class UserModel {
       'imagePath': imagePath,
       'phoneNumber': phoneNumber,
       'password': password,
+      'fullName': fullName, // Include fullName in JSON serialization
     };
   }
 
@@ -34,6 +37,7 @@ class UserModel {
       imagePath: json['imagePath'],
       phoneNumber: json['phoneNumber'],
       password: json['password'],
+      fullName: json['fullName'], // Deserialize fullName from JSON
     );
   }
 }

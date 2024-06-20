@@ -53,6 +53,39 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
       appBar: AppBar(
         title: const Text('Upload'),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.purple,
+              ),
+              child: Text(
+                'Admin Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.book),
+              title: Text('User Bookings'),
+              onTap: () {
+                Navigator.pushNamed(context, '/userdetails');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.hotel),
+              title: Text('Add Hotels'),
+              onTap: () {
+                Navigator.pushNamed(context, '/addHotels');
+              },
+            ),
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
@@ -71,9 +104,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                   return null;
                 },
               ),
-              const SizedBox(
-                height: 20.0,
-              ),
+              const SizedBox(height: 20.0),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Location',
@@ -86,9 +117,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                   return null;
                 },
               ),
-              const SizedBox(
-                height: 20.0,
-              ),
+              const SizedBox(height: 20.0),
               Slider(
                 value: rating,
                 min: 0.0,
@@ -99,9 +128,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                   setState(() => rating = newRating);
                 },
               ),
-              const SizedBox(
-                height: 20.0,
-              ),
+              const SizedBox(height: 20.0),
               TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Image URL',
@@ -114,9 +141,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                   return null;
                 },
               ),
-              const SizedBox(
-                height: 10.0,
-              ),
+              const SizedBox(height: 10.0),
               ElevatedButton(
                 onPressed: () => showDialog(
                   context: context,
@@ -140,9 +165,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(
-                              height: 30.0,
-                            ),
+                            const SizedBox(height: 30.0),
                             TextFormField(
                               decoration: InputDecoration(
                                 labelText: 'Rate',
@@ -160,9 +183,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                               onSaved: (newValue) =>
                                   roomRate = double.parse(newValue!),
                             ),
-                            const SizedBox(
-                              height: 30.0,
-                            ),
+                            const SizedBox(height: 30.0),
                             SwitchListTile(
                               title: const Text('Available'),
                               value: isRoomAvailable,
@@ -219,7 +240,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>  MyHomePage(title: 'The Hotel screen'),
+                        builder: (context) => MyHomePage(title: 'The Hotel screen'),
                       ),
                     );
                   }

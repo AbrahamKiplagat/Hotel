@@ -1,7 +1,8 @@
-// booking_models.dart
-import 'room_model.dart';  // Ensure this is correct based on your directory structure
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'room_model.dart';  // Ensure this import is correct based on your directory structure
 
 class Booking {
+  final String id; // Add id field
   final String bookedBy;  // Email
   final DateTime timestamp;
   final String hotelName;
@@ -11,6 +12,7 @@ class Booking {
   final Room room;
 
   Booking({
+    required this.id, // Initialize id in constructor
     required this.bookedBy,
     required this.timestamp,
     required this.hotelName,
@@ -20,9 +22,26 @@ class Booking {
     required this.room,
   });
 
-  //serialize data to JSON
+  // Deserialize Firestore document snapshot to Booking object
+  factory Booking.fromDocument(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    return Booking(
+      id: doc.id, // Assign document id to booking id
+      bookedBy: data['bookedBy'],
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      hotelName: data['hotelName'],
+      phoneNumber: data['phoneNumber'],
+      totalAmount: data['totalAmount'],
+      isPaid: data['isPaid'],
+      room: Room.fromJson(data['room']),
+    );
+  }
+
+  // Serialize Booking object to JSON
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'bookedBy': bookedBy,
       'timestamp': timestamp.toIso8601String(),
       'hotelName': hotelName,
@@ -33,9 +52,10 @@ class Booking {
     };
   }
 
-  //deserialize JSON to data
+  // Deserialize JSON to Booking object
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
+      id: json['id'],
       bookedBy: json['bookedBy'],
       timestamp: DateTime.parse(json['timestamp']),
       hotelName: json['hotelName'],
@@ -46,3 +66,4 @@ class Booking {
     );
   }
 }
+
