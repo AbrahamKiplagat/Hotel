@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:hotel/presentation/home/admin_drawer.dart'; // Import the AdminDrawer
 
 class AdminBookingDisplayScreen extends StatelessWidget {
   Future<List<Map<String, dynamic>>> fetchUsers() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('users').get();
 
     List<Map<String, dynamic>> usersList = [];
     querySnapshot.docs.forEach((doc) {
@@ -17,9 +17,8 @@ class AdminBookingDisplayScreen extends StatelessWidget {
   }
 
   Future<List<Map<String, dynamic>>> fetchRoomBookings() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-        .collection('room_bookings')
-        .get();
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('room_bookings').get();
 
     List<Map<String, dynamic>> roomBookingsList = [];
     querySnapshot.docs.forEach((doc) {
@@ -41,6 +40,7 @@ class AdminBookingDisplayScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Users Bookings'),
       ),
+      drawer: AdminDrawer(), // Use the AdminDrawer widget
       backgroundColor: Colors.purple[100],
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchUsers(), // Fetch users data
@@ -72,22 +72,39 @@ class AdminBookingDisplayScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
                   columns: [
-                    DataColumn(label: Text('User', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Room Type', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Rate', style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(
+                        label: Text('User',
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(
+                        label: Text('Email',
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(
+                        label: Text('Phone Number',
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(
+                        label: Text('Room Type',
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(
+                        label: Text('Rate',
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                    DataColumn(
+                        label: Text('Booked Date',
+                            style: TextStyle(fontWeight: FontWeight.bold))),
                   ],
                   rows: roomBookings.map((booking) {
                     // Find corresponding user details for each booking
                     var user = users.firstWhere(
                       (user) => user['email'] == booking['bookedBy'],
-                      orElse: () => {'displayName': 'Unknown User', 'email': booking['bookedBy'], 'phoneNumber': 'N/A'},
+                      orElse: () => {
+                        'displayName': 'Unknown User',
+                        'email': booking['bookedBy'],
+                        'phoneNumber': 'N/A'
+                      },
                     );
 
                     return DataRow(cells: [
-                      DataCell(Text(user['displayName'] ?? 'Unknown')),
+                      DataCell(
+                          Text(user['displayName'] ?? 'Unknown')),
                       DataCell(Text(user['email'] ?? 'Unknown')),
                       DataCell(Text(user['phoneNumber'] ?? 'N/A')),
                       DataCell(Text(booking['roomType'] ?? 'Unknown')),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hotel/domain/services/firestore_service.dart';
+// import 'package:hotel/domain/services/firestore_service.dart';
 import 'package:hotel/home.dart';
 import 'package:hotel/presentation/authentication/screens/login_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
@@ -36,7 +36,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => AdminProvider()),
         // Provider for managing hotel-related state.
         ChangeNotifierProvider(create: (context) => HotelProvider()), // Provide the HotelProvider
-          Provider<FirestoreService>(create: (_) => FirestoreService()),
+          // Provider<FirestoreService>(create: (_) => FirestoreService()),
       ],
       // Hotel is the root widget of our application.
       child: const Hotel(),

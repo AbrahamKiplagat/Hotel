@@ -5,6 +5,7 @@ import '../../domain/models/hotel_model.dart';
 import '../../domain/models/room_model.dart';
 import '../../providers/hotel_provider.dart';
 import '../home/home_screen.dart';
+import 'admin_drawer.dart'; // Import the AdminDrawer
 
 class AddHotelScreen extends StatefulWidget {
   const AddHotelScreen({Key? key}) : super(key: key);
@@ -53,39 +54,8 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
       appBar: AppBar(
         title: const Text('Upload'),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.purple,
-              ),
-              child: Text(
-                'Admin Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('User Bookings'),
-              onTap: () {
-                Navigator.pushNamed(context, '/userdetails');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.hotel),
-              title: Text('Add Hotels'),
-              onTap: () {
-                Navigator.pushNamed(context, '/addHotels');
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: AdminDrawer(), // Use the AdminDrawer widget
+      backgroundColor: Colors.purple[100], // Set background color
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
@@ -94,7 +64,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
             children: [
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'Hotel Name',
                 ),
                 controller: nameController,
                 validator: (value) {
