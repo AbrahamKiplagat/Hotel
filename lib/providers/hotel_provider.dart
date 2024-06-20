@@ -1,25 +1,37 @@
 import 'package:flutter/material.dart';
-// import 'package:hotel/main.dart';
-
-import '../data/dummy.dart';
 import '../domain/models/hotel_model.dart';
 import '../domain/services/hotel_service.dart';
 
 class HotelProvider extends ChangeNotifier {
   final HotelService _hotelService = HotelService();
-//initialize an empty list of hotels
   List<Hotel> _hotels = [];
-  //getter for the hotels list
+  bool _isLoading = false;
+  bool _hasError = false;
+  String _errorMessage = '';
+
   List<Hotel> get hotels => _hotels;
-/*
-**All the methods below are from the HotelService class
-*/
+  bool get isLoading => _isLoading;
+  bool get hasError => _hasError;
+  String get errorMessage => _errorMessage;
+
   Future<void> fetchHotels() async {
     try {
+      _isLoading = true;
+      notifyListeners();
+
       _hotels = await _hotelService.getHotels();
+
+      _isLoading = false;
+      _hasError = false;
+      _errorMessage = '';
+
       notifyListeners();
     } catch (e) {
-      print('Error fetching hotels: $e');
+      _isLoading = false;
+      _hasError = true;
+      _errorMessage = 'Error fetching hotels: $e';
+      print(_errorMessage);
+      notifyListeners();
     }
   }
 
@@ -54,14 +66,14 @@ class HotelProvider extends ChangeNotifier {
     }
   }
 
-  //call the setHotels method from the HotelService class
-  Future<void> setHotels() async {
+  Future<void> setHotels(List<Hotel> hotels) async {
     try {
-      await _hotelService.setHotels(dummyHotels);
-      _hotels = dummyHotels;
+      await _hotelService.setHotels(hotels);
+      _hotels = hotels; // Update local list with the new hotels
       notifyListeners();
     } catch (e) {
       print('Error setting hotels: $e');
     }
   }
 }
+

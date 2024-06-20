@@ -1,4 +1,6 @@
-import 'package:hotel/domain/models/room_model.dart';
+// hotel_model.dart
+
+import 'room_model.dart'; // Ensure Room import is correct
 
 class Hotel {
   final int id;
@@ -7,6 +9,7 @@ class Hotel {
   final double rating;
   final String imageUrl;
   final List<Room> rooms;
+  final double amount;  // Add amount field for the hotel
 
   Hotel({
     required this.id,
@@ -15,9 +18,10 @@ class Hotel {
     required this.rating,
     required this.imageUrl,
     required this.rooms,
+    required this.amount,  // Include amount in the constructor
   });
 
-  //serialize data to JSON
+  // Serialize data to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -25,18 +29,20 @@ class Hotel {
       'location': location,
       'rating': rating,
       'imageUrl': imageUrl,
+      'amount': amount,  // Include amount in serialization
       'rooms': rooms.map((room) => room.toJson()).toList(),
     };
   }
 
-  //deserialize JSON to data
+  // Deserialize JSON to data
   factory Hotel.fromJson(Map<String, dynamic> json) {
     return Hotel(
       id: json['id'],
       name: json['name'],
       location: json['location'],
-      rating: json['rating'],
+      rating: json['rating'] ?? 0.0,
       imageUrl: json['imageUrl'],
+      amount: json['amount'],  // Deserialize amount
       rooms: List<Room>.from(json['rooms'].map((room) => Room.fromJson(room))),
     );
   }

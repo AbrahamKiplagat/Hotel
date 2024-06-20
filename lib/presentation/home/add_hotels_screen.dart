@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../domain/models/hotel_model.dart';
 import '../../domain/models/room_model.dart';
 import '../../providers/hotel_provider.dart';
 import '../home/home_screen.dart';
-import 'admin_drawer.dart'; // Import the AdminDrawer
+import 'admin_drawer.dart';
 
 class AddHotelScreen extends StatefulWidget {
   const AddHotelScreen({Key? key}) : super(key: key);
@@ -21,6 +26,11 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
   final imageUrlController = TextEditingController();
   double rating = 0.0;
   List<Room> rooms = [];
+  double amount = 0.0;
+
+  // Image picker instance
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile; // Selected image file
 
   @override
   void dispose() {
@@ -33,34 +43,80 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
   final _roomformKey = GlobalKey<FormState>();
   final type = TextEditingController();
   double roomRate = 0.0;
+  double roomAmount = 0.0;
   bool isRoomAvailable = true;
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _imageFile = pickedFile;
+    });
+  }
+
+  Future<void> _uploadImage(String hotelName) async {
+    if (_imageFile == null) return;
+
+    final Reference storageRef = FirebaseStorage.instance.ref().child('hotels').child(hotelName);
+    await storageRef.putFile(File(_imageFile!.path));
+    final String downloadUrl = await storageRef.getDownloadURL();
+
+    setState(() {
+      imageUrlController.text = downloadUrl;
+    });
+  }
 
   void addNewRoom() {
     if (_roomformKey.currentState!.validate()) {
       _roomformKey.currentState!.save();
       setState(() {
-        rooms.add(Room(type: type.text, rate: roomRate, isAvailable: isRoomAvailable));
+        rooms.add(Room(
+          type: type.text,
+          rate: roomRate,
+          amount: roomAmount,
+          isAvailable: isRoomAvailable,
+        ));
         type.clear();
         roomRate = 0.0;
+        roomAmount = 0.0;
         isRoomAvailable = true;
       });
     }
-    Navigator.pop(context);
+  }
+
+  Future<void> _addHotelToFirestore(Hotel hotel) async {
+    try {
+      await FirebaseFirestore.instance.collection('hotels').add({
+        'name': hotel.name,
+        'location': hotel.location,
+        'rating': hotel.rating,
+        'imageUrl': hotel.imageUrl,
+        'amount': hotel.amount,
+        'rooms': hotel.rooms.map((room) => {
+              'type': room.type,
+              'rate': room.rate,
+              'amount': room.amount,
+              'isAvailable': room.isAvailable,
+            }).toList(),
+      });
+    } catch (e) {
+      print('Error adding hotel to Firestore: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload'),
+        title: const Text('Add Hotel'),
       ),
-      drawer: AdminDrawer(), // Use the AdminDrawer widget
-      backgroundColor: Colors.purple[100], // Set background color
+      drawer: AdminDrawer(),
+      backgroundColor: Colors.purple[100],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 decoration: const InputDecoration(
@@ -93,7 +149,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                 min: 0.0,
                 max: 5.0,
                 divisions: 10,
-                label: 'Rating ($rating)',
+                label: 'Rating: $rating',
                 onChanged: (newRating) {
                   setState(() => rating = newRating);
                 },
@@ -111,7 +167,29 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () async {
+                  await _pickImage();
+                  if (_imageFile != null) {
+                    await _uploadImage(nameController.text);
+                  }
+                },
+                child: const Text('Pick and Upload Image'),
+              ),
+              const SizedBox(height: 20.0),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Amount',
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    amount = double.tryParse(value) ?? 0.0;
+                  });
+                },
+              ),
+              const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () => showDialog(
                   context: context,
@@ -122,6 +200,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                         key: _roomformKey,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextFormField(
                               decoration: const InputDecoration(
@@ -135,30 +214,39 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 30.0),
+                            const SizedBox(height: 20.0),
                             TextFormField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Rate',
-                                hintText: roomRate.toString(),
                               ),
                               keyboardType: TextInputType.number,
-                              controller: TextEditingController(
-                                  text: roomRate.toString()),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter room rate';
-                                }
-                                return null;
+                              onChanged: (value) {
+                                setState(() {
+                                  roomRate = double.tryParse(value) ?? 0.0;
+                                });
                               },
-                              onSaved: (newValue) =>
-                                  roomRate = double.parse(newValue!),
                             ),
-                            const SizedBox(height: 30.0),
+                            const SizedBox(height: 20.0),
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Amount',
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                setState(() {
+                                  roomAmount = double.tryParse(value) ?? 0.0;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 20.0),
                             SwitchListTile(
                               title: const Text('Available'),
                               value: isRoomAvailable,
-                              onChanged: (value) =>
-                                  setState(() => isRoomAvailable = value),
+                              onChanged: (value) {
+                                setState(() {
+                                  isRoomAvailable = value;
+                                });
+                              },
                             ),
                           ],
                         ),
@@ -168,8 +256,11 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('Cancel'),
                         ),
-                        TextButton(
-                          onPressed: addNewRoom,
+                        ElevatedButton(
+                          onPressed: () {
+                            addNewRoom();
+                            Navigator.pop(context);
+                          },
                           child: const Text('Add'),
                         ),
                       ],
@@ -178,22 +269,35 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                 ),
                 child: const Text('Add Room'),
               ),
-              const Text('Rooms:'),
+              const SizedBox(height: 20.0),
+              const Text(
+                'Rooms:',
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10.0),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: rooms.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(rooms[index].type),
-                    subtitle: Text('Rate: ${rooms[index].rate}'),
-                    trailing: Text(rooms[index].isAvailable
-                        ? 'Available'
-                        : 'Not Available'),
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: ListTile(
+                      title: Text('Type: ${rooms[index].type}'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Rate: ${rooms[index].rate}'),
+                          Text('Amount: ${rooms[index].amount}'),
+                          Text(rooms[index].isAvailable ? 'Available' : 'Not Available'),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
+              const SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     String name = nameController.text;
                     String location = locationController.text;
@@ -202,10 +306,14 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
                       id: 0, // Provide a default or appropriate value for the id
                       name: name,
                       location: location,
-                      imageUrl: imageUrl,
                       rating: rating,
+                      imageUrl: imageUrl,
                       rooms: rooms,
+                      amount: amount,
                     );
+
+                    await _addHotelToFirestore(hotel);
+
                     context.read<HotelProvider>().addHotel(hotel);
                     Navigator.push(
                       context,
