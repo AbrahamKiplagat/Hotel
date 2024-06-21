@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:hotel/providers/auth_provider.dart';
@@ -51,9 +49,14 @@ class HotelRoomsScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 4),
-            Text(
-              'Rating: ${hotel['rating']}',
-              style: TextStyle(fontSize: 16),
+            Row(
+              children: [
+                Text(
+                  'Rating: ',
+                  style: TextStyle(fontSize: 16),
+                ),
+                _buildStarRating(hotel['rating']),
+              ],
             ),
             SizedBox(height: 4),
             Text(
@@ -97,9 +100,14 @@ class HotelRoomsScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 16),
                 ),
                 SizedBox(height: 4),
-                Text(
-                  'Rate: ${room['rate']}',
-                  style: TextStyle(fontSize: 16),
+                Row(
+                  children: [
+                    Text(
+                      'Rating: ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    _buildStarRating(room['rate']),
+                  ],
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -123,6 +131,32 @@ class HotelRoomsScreen extends StatelessWidget {
       );
     }
     return roomCards;
+  }
+
+  Widget _buildStarRating(dynamic rating) {
+    if (rating == null) {
+      return Text('N/A');
+    }
+
+    double ratingValue = double.tryParse(rating.toString()) ?? 0.0;
+
+    int fullStars = ratingValue.floor();
+    int halfStars = (ratingValue - fullStars >= 0.5) ? 1 : 0;
+    int emptyStars = 5 - fullStars - halfStars;
+
+    List<Widget> stars = [];
+
+    for (int i = 0; i < fullStars; i++) {
+      stars.add(Icon(Icons.star, color: Colors.amber));
+    }
+    if (halfStars == 1) {
+      stars.add(Icon(Icons.star_half, color: Colors.amber));
+    }
+    for (int i = 0; i < emptyStars; i++) {
+      stars.add(Icon(Icons.star_border, color: Colors.amber));
+    }
+
+    return Row(children: stars);
   }
 
   void _bookHotel(BuildContext context, String userId) async {
@@ -155,7 +189,7 @@ class HotelRoomsScreen extends StatelessWidget {
     final bookingData = {
       'roomId': room['id'],
       'roomName': room['type'], // Assuming the room type is used as the room name
-      // 'hotelName': hotel['name'],
+      'hotelName': hotel['name'],
       'userId': userId,
       'amount': room['amount'],
       'timestamp': FieldValue.serverTimestamp(),
