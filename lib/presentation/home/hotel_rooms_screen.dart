@@ -166,12 +166,12 @@ class HotelRoomsScreen extends StatelessWidget {
       'userId': userId,
       'amount': hotel['amount'],
       'timestamp': FieldValue.serverTimestamp(),
-      'userDetails': {
+      
         'displayName': Provider.of<AuthProvider>(context, listen: false).user?.displayName,
         'email': Provider.of<AuthProvider>(context, listen: false).user?.email,
         'phoneNumber': Provider.of<AuthProvider>(context, listen: false).user?.phoneNumber,
-      },
-    };
+      };
+    
 
     try {
       await FirebaseFirestore.instance.collection('hotelBookings').add(bookingData);
@@ -193,11 +193,11 @@ class HotelRoomsScreen extends StatelessWidget {
       'userId': userId,
       'amount': room['amount'],
       'timestamp': FieldValue.serverTimestamp(),
-      'userDetails': {
+      
         'displayName': Provider.of<AuthProvider>(context, listen: false).user?.displayName,
         'email': Provider.of<AuthProvider>(context, listen: false).user?.email,
         'phoneNumber': Provider.of<AuthProvider>(context, listen: false).user?.phoneNumber,
-      },
+      
     };
 
     try {

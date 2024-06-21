@@ -18,7 +18,7 @@ class AdminBookingDisplayScreen extends StatelessWidget {
 
   Future<List<Map<String, dynamic>>> fetchRoomBookings() async {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await FirebaseFirestore.instance.collection('room_bookings').get();
+        await FirebaseFirestore.instance.collection('roomBookings').get();
 
     List<Map<String, dynamic>> roomBookingsList = [];
     querySnapshot.docs.forEach((doc) {
@@ -26,6 +26,18 @@ class AdminBookingDisplayScreen extends StatelessWidget {
     });
 
     return roomBookingsList;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchHotelBookings() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('hotelBookings').get();
+
+    List<Map<String, dynamic>> hotelBookingsList = [];
+    querySnapshot.docs.forEach((doc) {
+      hotelBookingsList.add(doc.data());
+    });
+
+    return hotelBookingsList;
   }
 
   String formatTimestamp(Timestamp timestamp) {
@@ -63,56 +75,91 @@ class AdminBookingDisplayScreen extends StatelessWidget {
                 return Center(child: Text('Error: ${roomBookingsSnapshot.error}'));
               }
 
-              // Assuming snapshots contain lists of user and room bookings data
-              List<Map<String, dynamic>> users = usersSnapshot.data ?? [];
-              List<Map<String, dynamic>> roomBookings = roomBookingsSnapshot.data ?? [];
+              // Fetch hotel bookings data
+              return FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchHotelBookings(),
+                builder: (context, hotelBookingsSnapshot) {
+                  if (hotelBookingsSnapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (hotelBookingsSnapshot.hasError) {
+                    return Center(child: Text('Error: ${hotelBookingsSnapshot.error}'));
+                  }
 
-              // Build DataTable with combined data
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: [
-                    DataColumn(
-                        label: Text('User',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label: Text('Email',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label: Text('Phone Number',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label: Text('Room Type',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label: Text('Rate',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                    DataColumn(
-                        label: Text('Booked Date',
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                  ],
-                  rows: roomBookings.map((booking) {
-                    // Find corresponding user details for each booking
-                    var user = users.firstWhere(
-                      (user) => user['email'] == booking['bookedBy'],
+                  // Assuming snapshots contain lists of user, room bookings, and hotel bookings data
+                  List<Map<String, dynamic>> users = usersSnapshot.data ?? [];
+                  List<Map<String, dynamic>> roomBookings = roomBookingsSnapshot.data ?? [];
+                  List<Map<String, dynamic>> hotelBookings = hotelBookingsSnapshot.data ?? [];
+
+                  // Function to find user details by userId
+                  Map<String, dynamic> findUserById(String userId) {
+                    return users.firstWhere(
+                      (user) => user['userId'] == userId,
                       orElse: () => {
                         'displayName': 'Unknown User',
-                        'email': booking['bookedBy'],
-                        'phoneNumber': 'N/A'
+                        'email': 'Unknown',
+                        'phoneNumber': 'N/A',
                       },
                     );
+                  }
 
-                    return DataRow(cells: [
-                      DataCell(
-                          Text(user['displayName'] ?? 'Unknown')),
-                      DataCell(Text(user['email'] ?? 'Unknown')),
-                      DataCell(Text(user['phoneNumber'] ?? 'N/A')),
-                      DataCell(Text(booking['roomType'] ?? 'Unknown')),
-                      DataCell(Text(booking['rate']?.toString() ?? '0')),
-                      DataCell(Text(formatTimestamp(booking['timestamp']))),
-                    ]);
-                  }).toList(),
-                ),
+                  // Combine and display all bookings data
+                  List<Map<String, dynamic>> allBookings = [
+                    ...roomBookings.map((booking) {
+                      var user = findUserById(booking['userId']);
+                      return {
+                        'userName': booking['displayName'],
+                        'email': booking['email'],
+                        'phoneNumber': booking['phoneNumber'],
+                        'bookingType': 'Room Booking',
+                        'amount': booking['amount'],
+                        'timestamp': booking['timestamp'],
+                        'hotelId': null, // Set to null for consistent structure
+                        'hotelName': null, // Set to null for consistent structure
+                      };
+                    }),
+                    ...hotelBookings.map((booking) {
+                      var user = findUserById(booking['userId']);
+                      return {
+                        'userName': booking['displayName'],
+                        'email': booking['email'],
+                        'phoneNumber': booking['phoneNumber'],
+                        'bookingType': 'Hotel Booking',
+                        'amount': booking['amount'],
+                        'timestamp': booking['timestamp'],
+                        'hotelId': booking['hotelId'],
+                        'hotelName': booking['hotelName'],
+                      };
+                    }),
+                  ];
+
+                  // Build DataTable with combined data
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: [
+                        DataColumn(label: Text('User Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataColumn(label: Text('Booking Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataColumn(label: Text('Hotel Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                      ],
+                      rows: allBookings.map((booking) {
+                        return DataRow(cells: [
+                          DataCell(Text(booking['userName'] ?? 'Unknown')),
+                          DataCell(Text(booking['email'] ?? 'Unknown')),
+                          DataCell(Text(booking['phoneNumber'] ?? 'N/A')),
+                          DataCell(Text(booking['bookingType'] ?? 'Unknown')),
+                          DataCell(Text(booking['amount']?.toString() ?? '0')),
+                          DataCell(Text(formatTimestamp(booking['timestamp']))),
+                          DataCell(Text(booking['hotelName'] ?? 'N/A')),
+                        ]);
+                      }).toList(),
+                    ),
+                  );
+                },
               );
             },
           );
