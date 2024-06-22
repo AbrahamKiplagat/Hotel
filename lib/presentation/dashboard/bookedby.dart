@@ -101,7 +101,8 @@ class BookingDisplayScreen extends StatelessWidget {
                               phoneNumber = '+254${phoneNumber.substring(1)}';
                             }
 
-                            String message = await payNow(totalAmount, phoneNumber);
+                            // Simulate payment with fake parameters
+                            String message = await payNow(totalAmount, phoneNumber, simulate: true, simulateStatus: 'success');
                             ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(message)));
                           },
@@ -172,21 +173,40 @@ class BookingDisplayScreen extends StatelessWidget {
     }
   }
 
-  Future<String> payNow(double totalAmount, String phoneNumber) async {
+  Future<String> payNow(double totalAmount, String phoneNumber, {bool simulate = false, String simulateStatus = 'success'}) async {
     try {
-      String apiUrl = 'http://localhost:3000/initiateSTKPush'; // Replace with your server URL
+      int amountInKobo = (totalAmount * 100).toInt();  // Convert to kobo
 
-      final response = await http.post(Uri.parse(apiUrl), body: {
+      String apiUrl = 'http://localhost:3000/initiatePaystackTransaction';
+
+      // Prepare request body
+      Map<String, String> requestBody = {
         'phoneNumber': phoneNumber,
-        'amount': totalAmount.toString(),
-      });
+        'amount': amountInKobo.toString(),
+      };
+
+      if (simulate) {
+        requestBody['test_mode'] = 'true';
+        requestBody['simulate'] = 'true';
+        requestBody['status'] = simulateStatus;
+      }
+
+      final response = await http.post(Uri.parse(apiUrl), body: requestBody);
 
       if (response.statusCode == 200) {
         return 'Payment initiated successfully';
       } else {
-        return 'Failed to initiate payment: ${response.body}';
+        print('Failed to initiate payment - HTTP ${response.statusCode}: ${response.body}');
+        // Handle specific Paystack error cases
+        if (response.statusCode == 400) {
+          // Check response body for specific error details
+          // For example, if (response.body.contains('invalid_amount')) ...
+          return 'Failed to initiate payment: Invalid amount';
+        }
+        return 'Failed to initiate payment. Please try again later.';
       }
     } catch (e) {
+      print('Error initiating payment: $e');
       return 'Error: $e';
     }
   }

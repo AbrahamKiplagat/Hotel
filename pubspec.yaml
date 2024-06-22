@@ -56,6 +56,8 @@ dependencies:
   intl_phone_field: ^3.2.0
   intl_phone_number_input: ^0.7.4
   web_socket_channel: ^3.0.0
+  pay_with_paystack: ^1.0.6
+  
 
 dev_dependencies:
   flutter_test:

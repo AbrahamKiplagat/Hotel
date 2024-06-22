@@ -17,12 +17,21 @@ class HotelRoomsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(hotel['name']),
       ),
-      body: ListView(
-        children: [
-          _buildHotelCard(context, user?.uid),
-          SizedBox(height: 16),
-          ..._buildRoomCards(context, user?.uid),
-        ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueAccent, Colors.purpleAccent, Colors.yellow],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: ListView(
+          children: [
+            _buildHotelCard(context, user?.uid),
+            SizedBox(height: 16),
+            ..._buildRoomCards(context, user?.uid),
+          ],
+        ),
       ),
     );
   }
@@ -166,12 +175,10 @@ class HotelRoomsScreen extends StatelessWidget {
       'userId': userId,
       'amount': hotel['amount'],
       'timestamp': FieldValue.serverTimestamp(),
-      
-        'displayName': Provider.of<AuthProvider>(context, listen: false).user?.displayName,
-        'email': Provider.of<AuthProvider>(context, listen: false).user?.email,
-        'phoneNumber': Provider.of<AuthProvider>(context, listen: false).user?.phoneNumber,
-      };
-    
+      'displayName': Provider.of<AuthProvider>(context, listen: false).user?.displayName,
+      'email': Provider.of<AuthProvider>(context, listen: false).user?.email,
+      'phoneNumber': Provider.of<AuthProvider>(context, listen: false).user?.phoneNumber,
+    };
 
     try {
       await FirebaseFirestore.instance.collection('hotelBookings').add(bookingData);
@@ -193,11 +200,9 @@ class HotelRoomsScreen extends StatelessWidget {
       'userId': userId,
       'amount': room['amount'],
       'timestamp': FieldValue.serverTimestamp(),
-      
-        'displayName': Provider.of<AuthProvider>(context, listen: false).user?.displayName,
-        'email': Provider.of<AuthProvider>(context, listen: false).user?.email,
-        'phoneNumber': Provider.of<AuthProvider>(context, listen: false).user?.phoneNumber,
-      
+      'displayName': Provider.of<AuthProvider>(context, listen: false).user?.displayName,
+      'email': Provider.of<AuthProvider>(context, listen: false).user?.email,
+      'phoneNumber': Provider.of<AuthProvider>(context, listen: false).user?.phoneNumber,
     };
 
     try {
