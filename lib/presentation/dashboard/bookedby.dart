@@ -236,13 +236,30 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(booking?['name'] ?? 'No name'),
-        subtitle: Text('Amount: KSH ${booking?['amount'] ?? 0}'),
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: onDelete,
+      return Card(
+      margin: EdgeInsets.all(8.0),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Hotel: ${booking?['hotelName'] ?? 'Unknown'}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8.0),
+            Text('Amount: KSH ${booking?['amount'] ?? 'Unknown'}'),
+            Text('Display Name: ${booking?['displayName'] ?? 'Unknown'}'),
+            Text('Email: ${booking?['email'] ?? 'Unknown'}'),
+            Text('Phone: ${booking?['phoneNumber'] ?? 'Unknown'}'),
+            Text('Timestamp: ${booking?['timestamp']?.toDate() ?? 'Unknown'}'),
+            SizedBox(height: 8.0),
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: onDelete,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -265,12 +282,31 @@ class RoomBookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
-        title: Text(booking?['roomName'] ?? 'No room name'),
-        subtitle: Text('Amount: KSH ${booking?['amount'] ?? 0}'),
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: onDelete,
+      margin: EdgeInsets.all(8.0),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Hotel: ${booking?['hotelName'] ?? 'Unknown'}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Room: ${booking?['roomName'] ?? 'Unknown'}',
+                style: TextStyle(fontSize: 16)),
+            SizedBox(height: 8.0),
+            Text('Amount: KSH ${booking?['amount'] ?? 'Unknown'}'),
+            Text('Display Name: ${booking?['displayName'] ?? 'Unknown'}'),
+            Text('Email: ${booking?['email'] ?? 'Unknown'}'),
+            Text('Phone: ${booking?['phoneNumber'] ?? 'Unknown'}'),
+            Text('Timestamp: ${booking?['timestamp']?.toDate() ?? 'Unknown'}'),
+            SizedBox(height: 8.0),
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.remove_circle, color: Colors.red),
+                onPressed: onDelete,
+              ),
+            ),
+          ],
         ),
       ),
     );
