@@ -7,7 +7,7 @@ import 'package:hotel/presentation/authentication/screens/login_screen.dart';
 import 'package:hotel/presentation/authentication/screens/signUp_screen.dart';
 import 'package:hotel/presentation/authentication/screens/forgot_screen.dart';
 import 'package:hotel/presentation/dashboard/AdminBookingDisplayScreen';
-
+import 'package:pay_with_paystack/pay_with_paystack.dart';
 // import 'package:hotel/presentation/dashboard/admin_booking_display_screen.dart';
 import 'package:hotel/presentation/dashboard/bookedby.dart';
 import 'package:hotel/presentation/home/home_screen.dart';
@@ -20,11 +20,22 @@ import 'presentation/authentication/screens/admin_screen.dart';
 import 'providers/admin_provider.dart';
 import 'providers/hotel_provider.dart'; // Import the HotelProvider
 
+import 'package:webview_flutter/webview_flutter.dart';
+// #docregion platform_imports
+// Import for Android features.
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+// Import for iOS features.
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+// #enddocregion platform_imports
 Future<void> main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize webview_flutter
+  // WebView.platform = SurfaceAndroidWebView();
 
   runApp(
     MultiProvider(
@@ -72,18 +83,6 @@ class Hotel extends StatelessWidget {
   }
 }
 /*** 
- * add mpesa daraja 
- * send money
- * i think paid screen has to be created or a tick on the booked items
- * admin to see who has bought items and paid or not paid
- * add total number of people to visit the hotel,
- * so their is calculation for total number of people * the booking amount.
- * add booking dates from tommorows dates
- * add a screen for admin to see what people has bought
  * add 0.50ksh deduction  on a payed amount to your account
- * add a tests to your project to display if your project can complete all the transaction. 
- * 
+ * add a tests to your project to display if your project can complete all the transaction.  
 */
-/***
- * create a new fetch data, bookings,  so solve the error i am dealing with.
- */

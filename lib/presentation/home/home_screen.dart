@@ -255,12 +255,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildHotelCard(BuildContext context, Map<String, dynamic> hotel) {
 double cardHeight = MediaQuery.of(context).size.width > 900
     ? 500
+    // : MediaQuery.of(context).size.width > 700
+    //     ? 150
     : MediaQuery.of(context).size.width > 700
         ? 150
         : MediaQuery.of(context).size.width > 600
-            ? 150
+            ? 100
             : MediaQuery.of(context).size.width > 400
-                ? 100
+                ? 75
                 : 50;
 
 

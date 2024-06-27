@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import './checkout_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingDisplayScreen extends StatelessWidget {
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -32,12 +35,9 @@ class BookingDisplayScreen extends StatelessWidget {
                     snapshot.data!['roomBookings']!.isEmpty)) {
               return Center(child: Text('No bookings found.'));
             } else {
-              List<QueryDocumentSnapshot> hotelBookings =
-                  snapshot.data!['hotelBookings']!;
-              List<QueryDocumentSnapshot> roomBookings =
-                  snapshot.data!['roomBookings']!;
-              double totalAmount =
-                  calculateTotalAmount(hotelBookings, roomBookings);
+              List<QueryDocumentSnapshot> hotelBookings = snapshot.data!['hotelBookings']!;
+              List<QueryDocumentSnapshot> roomBookings = snapshot.data!['roomBookings']!;
+              double totalAmount = calculateTotalAmount(hotelBookings, roomBookings);
               return Column(
                 children: [
                   Expanded(
@@ -45,24 +45,20 @@ class BookingDisplayScreen extends StatelessWidget {
                       itemCount: hotelBookings.length + roomBookings.length,
                       itemBuilder: (context, index) {
                         if (index < hotelBookings.length) {
-                          var booking =
-                              hotelBookings[index].data() as Map<String, dynamic>;
+                          var booking = hotelBookings[index].data() as Map<String, dynamic>;
                           return BookingCard(
                             booking: booking,
                             bookingId: hotelBookings[index].id,
                             collection: 'hotelBookings',
-                            onDelete: () => _deleteBooking(
-                                hotelBookings[index].id, 'hotelBookings'),
+                            onDelete: () => _deleteBooking(hotelBookings[index].id, 'hotelBookings'),
                           );
                         } else {
-                          var booking = roomBookings[index - hotelBookings.length]
-                              .data() as Map<String, dynamic>;
+                          var booking = roomBookings[index - hotelBookings.length].data() as Map<String, dynamic>;
                           return RoomBookingCard(
                             booking: booking,
                             bookingId: roomBookings[index - hotelBookings.length].id,
                             collection: 'roomBookings',
-                            onDelete: () => _deleteBooking(
-                                roomBookings[index - hotelBookings.length].id, 'roomBookings'),
+                            onDelete: () => _deleteBooking(roomBookings[index - hotelBookings.length].id, 'roomBookings'),
                           );
                         }
                       },
@@ -72,9 +68,8 @@ class BookingDisplayScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        Text('Total Amount: KSH ${totalAmount.toStringAsFixed(2)}',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text('Total Amount: KSH ${totalAmount.toInt()}',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                         SizedBox(height: 16.0),
                         TextField(
                           controller: _phoneNumberController,
@@ -101,10 +96,8 @@ class BookingDisplayScreen extends StatelessWidget {
                               phoneNumber = '+254${phoneNumber.substring(1)}';
                             }
 
-                            // Simulate payment with fake parameters
-                            String message = await payNow(totalAmount, phoneNumber, simulate: true, simulateStatus: 'success');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(message)));
+                            // Start Paystack transaction
+                            await startPaystackPayment(context, totalAmount, phoneNumber);
                           },
                           child: Text('Pay Now'),
                         ),
@@ -120,22 +113,20 @@ class BookingDisplayScreen extends StatelessWidget {
     );
   }
 
-  double calculateTotalAmount(
-      List<QueryDocumentSnapshot> hotelBookings,
-      List<QueryDocumentSnapshot> roomBookings) {
-    double totalAmount = 0.0;
+  double calculateTotalAmount(List<QueryDocumentSnapshot> hotelBookings, List<QueryDocumentSnapshot> roomBookings) {
+    double totalAmount = 0;
 
     for (var booking in hotelBookings) {
       var data = booking.data() as Map<String, dynamic>;
       if (data.containsKey('amount')) {
-        totalAmount += data['amount'] ?? 0.0;
+        totalAmount += data['amount'] ?? 0;
       }
     }
 
     for (var booking in roomBookings) {
       var data = booking.data() as Map<String, dynamic>;
       if (data.containsKey('amount')) {
-        totalAmount += data['amount'] ?? 0.0;
+        totalAmount += data['amount'] ?? 0;
       }
     }
 
@@ -173,43 +164,61 @@ class BookingDisplayScreen extends StatelessWidget {
     }
   }
 
-  Future<String> payNow(double totalAmount, String phoneNumber, {bool simulate = false, String simulateStatus = 'success'}) async {
-    try {
-      int amountInKobo = (totalAmount * 100).toInt();  // Convert to kobo
+Future<void> startPaystackPayment(BuildContext context, double totalAmount, String phoneNumber) async {
+  int amountInKobo = (totalAmount * 100).toInt();  // Convert to kobo
 
-      String apiUrl = 'http://localhost:3000/initiatePaystackTransaction';
-
-      // Prepare request body
-      Map<String, String> requestBody = {
+  try {
+    // Debug: Print request body and headers
+    var requestBody = json.encode({
+      'amount': amountInKobo,
+      'email': FirebaseAuth.instance.currentUser!.email!,
+      // 'currency': 'KSH', // Replace with your currency code
+      'metadata': {
         'phoneNumber': phoneNumber,
-        'amount': amountInKobo.toString(),
-      };
+      },
+    });
 
-      if (simulate) {
-        requestBody['test_mode'] = 'true';
-        requestBody['simulate'] = 'true';
-        requestBody['status'] = simulateStatus;
-      }
+    print('Request Body: $requestBody');
 
-      final response = await http.post(Uri.parse(apiUrl), body: requestBody);
+    var headers = {
+      'Authorization': 'Bearer sk_test_48e846f7f8dc3a8a2bba852a4b1c8c3ab1cb20d5',
+      'Content-Type': 'application/json',
+    };
 
-      if (response.statusCode == 200) {
-        return 'Payment initiated successfully';
-      } else {
-        print('Failed to initiate payment - HTTP ${response.statusCode}: ${response.body}');
-        // Handle specific Paystack error cases
-        if (response.statusCode == 400) {
-          // Check response body for specific error details
-          // For example, if (response.body.contains('invalid_amount')) ...
-          return 'Failed to initiate payment: Invalid amount';
-        }
-        return 'Failed to initiate payment. Please try again later.';
-      }
-    } catch (e) {
-      print('Error initiating payment: $e');
-      return 'Error: $e';
+    print('Request Headers: $headers');
+
+    // Make HTTP request to Paystack API to initiate transaction
+    var response = await http.post(
+      Uri.parse('https://api.paystack.co/transaction/initialize'),
+      headers: headers,
+      body: requestBody,
+    );
+
+    // Debug: Print response status code and body
+    print('Response Status Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      var responseData = json.decode(response.body);
+      var authorizationUrl = responseData['data']['authorization_url'];
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment initiated')));
+
+        await launch(authorizationUrl);
+
+      // Navigate to PaystackPaymentWebView to complete payment
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PaystackPaymentWebView(authorizationUrl: authorizationUrl)),
+      );
+
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to initiate payment')));
     }
+  } catch (e) {
+    print('Payment Error: $e');
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment Error: $e')));
   }
+}
 }
 
 class BookingCard extends StatelessWidget {
@@ -228,29 +237,12 @@ class BookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Hotel: ${booking?['hotelName'] ?? 'Unknown'}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8.0),
-            Text('Amount: KSH ${booking?['amount'] ?? 'Unknown'}'),
-            Text('Display Name: ${booking?['displayName'] ?? 'Unknown'}'),
-            Text('Email: ${booking?['email'] ?? 'Unknown'}'),
-            Text('Phone: ${booking?['phoneNumber'] ?? 'Unknown'}'),
-            Text('Timestamp: ${booking?['timestamp']?.toDate() ?? 'Unknown'}'),
-            SizedBox(height: 8.0),
-            Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: Icon(Icons.remove_circle, color: Colors.red),
-                onPressed: onDelete,
-              ),
-            ),
-          ],
+      child: ListTile(
+        title: Text(booking?['name'] ?? 'No name'),
+        subtitle: Text('Amount: KSH ${booking?['amount'] ?? 0}'),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: onDelete,
         ),
       ),
     );
@@ -273,31 +265,12 @@ class RoomBookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(8.0),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Hotel: ${booking?['hotelName'] ?? 'Unknown'}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text('Room: ${booking?['roomName'] ?? 'Unknown'}',
-                style: TextStyle(fontSize: 16)),
-            SizedBox(height: 8.0),
-            Text('Amount: KSH ${booking?['amount'] ?? 'Unknown'}'),
-            Text('Display Name: ${booking?['displayName'] ?? 'Unknown'}'),
-            Text('Email: ${booking?['email'] ?? 'Unknown'}'),
-            Text('Phone: ${booking?['phoneNumber'] ?? 'Unknown'}'),
-            Text('Timestamp: ${booking?['timestamp']?.toDate() ?? 'Unknown'}'),
-            SizedBox(height: 8.0),
-            Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: Icon(Icons.remove_circle, color: Colors.red),
-                onPressed: onDelete,
-              ),
-            ),
-          ],
+      child: ListTile(
+        title: Text(booking?['roomName'] ?? 'No room name'),
+        subtitle: Text('Amount: KSH ${booking?['amount'] ?? 0}'),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: onDelete,
         ),
       ),
     );

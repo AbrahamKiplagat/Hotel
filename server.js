@@ -104,7 +104,12 @@ app.post('/initiatePaystackTransaction', async (req, res) => {
     });
 
     // If successful, return the authorization URL to the client
-    res.status(200).json({ authorization_url: response.data.data.authorization_url });
+    res.status(200).json({
+       status: true,
+        authorization_url: response.data.data.authorization_url,
+        
+       });
+       console.log`200 init: ${response.data.data.authorization_url} `
 
   } catch (error) {
     // Log detailed error information
@@ -112,9 +117,9 @@ app.post('/initiatePaystackTransaction', async (req, res) => {
     
     // Return appropriate error message to the client
     if (error.response && error.response.data) {
-      res.status(error.response.status || 500).send(`Failed to initiate Paystack transaction: ${error.response.data.message}`);
+      res.status(error.response.status || 500).json({ status: false, message: `Failed to initiate Paystack transaction: ${error.response.data.message}` });
     } else {
-      res.status(500).send(`Failed to initiate Paystack transaction: ${error.message}`);
+      res.status(500).json({ status: false, message: `Failed to initiate Paystack transaction: ${error.message}` });
     }
   }
 });
