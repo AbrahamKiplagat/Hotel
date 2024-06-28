@@ -167,33 +167,101 @@ class AdminBookingDisplayScreen extends StatelessWidget {
                         }),
                       ];
 
+                      // Calculate summary statistics
+                      int numberOfCustomers = users.length;
+                      double totalRevenue = payments.map((payment) => payment['amount'] ?? 0).fold(0, (prev, amount) => prev + amount);
+                      int totalHotelBookings = hotelBookings.length;
+                      int totalRoomBookings = roomBookings.length;
+
+                      // Build styled badges for summary statistics
+                      Widget buildBadge(String label, String value, IconData icon, Color color) {
+                        return Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          color: color,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(icon, color: Colors.white),
+                                SizedBox(width: 8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      label,
+                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                    ),
+                                    Text(
+                                      value,
+                                      style: TextStyle(color: Colors.white, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
                       // Build DataTable with combined data
                       return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: [
-                            DataColumn(label: Text('User Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Booking Type', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Hotel Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Paid', style: TextStyle(fontWeight: FontWeight.bold))),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                'Summary Statistics',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  buildBadge('Customers', numberOfCustomers.toString(), Icons.people, Colors.blue),
+                                  SizedBox(width: 10),
+                                  buildBadge('Revenue', '\KSH ${totalRevenue.toStringAsFixed(2)}', Icons.attach_money, Colors.green),
+                                  SizedBox(width: 10),
+                                  buildBadge('Hotel Bookings', totalHotelBookings.toString(), Icons.hotel, Colors.orange),
+                                  SizedBox(width: 10),
+                                  buildBadge('Room Bookings', totalRoomBookings.toString(), Icons.room, Colors.purple),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: DataTable(
+                                columns: [
+                                  DataColumn(label: Text('User Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Booking Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Hotel Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                                  DataColumn(label: Text('Paid', style: TextStyle(fontWeight: FontWeight.bold))),
+                                ],
+                                rows: allBookings.map((booking) {
+                                  return DataRow(cells: [
+                                    DataCell(Text(booking['userName'] ?? 'Unknown')),
+                                    DataCell(Text(booking['email'] ?? 'Unknown')),
+                                    DataCell(Text(booking['phoneNumber'] ?? 'N/A')),
+                                    DataCell(Text(booking['bookingType'] ?? 'Unknown')),
+                                    DataCell(Text(booking['amount']?.toString() ?? '0')),
+                                    DataCell(Text(formatTimestamp(booking['timestamp']))),
+                                    DataCell(Text(booking['hotelName'] ?? 'N/A')),
+                                    DataCell(Text(booking['paid'] ? 'Yes' : 'No')),
+                                  ]);
+                                }).toList(),
+                              ),
+                            ),
                           ],
-                          rows: allBookings.map((booking) {
-                            return DataRow(cells: [
-                              DataCell(Text(booking['userName'] ?? 'Unknown')),
-                              DataCell(Text(booking['email'] ?? 'Unknown')),
-                              DataCell(Text(booking['phoneNumber'] ?? 'N/A')),
-                              DataCell(Text(booking['bookingType'] ?? 'Unknown')),
-                              DataCell(Text(booking['amount']?.toString() ?? '0')),
-                              DataCell(Text(formatTimestamp(booking['timestamp']))),
-                              DataCell(Text(booking['hotelName'] ?? 'N/A')),
-                              DataCell(Text(booking['paid'] ? 'Yes' : 'No')),
-                              
-                            ]);
-                          }).toList(),
                         ),
                       );
                     },
