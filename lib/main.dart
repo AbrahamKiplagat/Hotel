@@ -11,6 +11,7 @@ import 'package:pay_with_paystack/pay_with_paystack.dart';
 // import 'package:hotel/presentation/dashboard/admin_booking_display_screen.dart';
 import 'package:hotel/presentation/dashboard/bookedby.dart';
 import 'package:hotel/presentation/home/home_screen.dart';
+import 'package:hotel/presentation/home/payment_graph_screen.dart';
 import 'core/theme/theme.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
@@ -78,6 +79,7 @@ class Hotel extends StatelessWidget {
         '/forgotPassword': (context) => ForgotPasswordScreen(), // Forgot password screen route
         '/admin': (context) => AdminScreen(), // Admin screen route
         '/addHotels': (context) => const AddHotelScreen(), // Add hotels screen route
+        '/payment-graph': (context) => PaymentGraphScreen(), // Add hotels screen route
       },
     );
   }

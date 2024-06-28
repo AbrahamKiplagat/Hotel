@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import './payment_graph_screen.dart';
 class AdminDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,15 @@ class AdminDrawer extends StatelessWidget {
             title: Text('Add Hotels'),
             onTap: () {
               Navigator.pushNamed(context, '/addHotels');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.payment), // Icon for the payment graph
+            title: Text('Payment Graph'), // Title for the payment graph
+            onTap: () {
+              
+               Navigator.pushNamed(context, '/payment-graph'); // Navigate to PaymentGraphScreen
+              
             },
           ),
         ],
