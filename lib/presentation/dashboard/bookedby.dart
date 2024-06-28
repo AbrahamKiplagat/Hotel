@@ -4,7 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import './checkout_view.dart';
+import './no_bookings.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+// Import the NoBookingsScreen widget
+// import 'no_bookings_screen.dart';
 
 class BookingDisplayScreen extends StatelessWidget {
   final TextEditingController _phoneNumberController = TextEditingController();
@@ -33,7 +37,8 @@ class BookingDisplayScreen extends StatelessWidget {
             } else if (!snapshot.hasData ||
                 (snapshot.data!['hotelBookings']!.isEmpty &&
                     snapshot.data!['roomBookings']!.isEmpty)) {
-              return Center(child: Text('No bookings found.'));
+              // Display NoBookingsScreen when no bookings are found
+              return NoBookingsScreen();
             } else {
               List<QueryDocumentSnapshot> hotelBookings = snapshot.data!['hotelBookings']!;
               List<QueryDocumentSnapshot> roomBookings = snapshot.data!['roomBookings']!;
