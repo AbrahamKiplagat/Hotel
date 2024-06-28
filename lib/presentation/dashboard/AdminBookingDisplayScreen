@@ -65,6 +65,7 @@ class AdminBookingDisplayScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Users Bookings'),
+        backgroundColor: Colors.purple[700],
       ),
       drawer: AdminDrawer(), // Use the AdminDrawer widget
       backgroundColor: Colors.purple[100],

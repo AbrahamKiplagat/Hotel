@@ -108,6 +108,7 @@ class _AddHotelScreenState extends State<AddHotelScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Hotel'),
+        backgroundColor: Colors.purple[700],
       ),
       drawer: AdminDrawer(),
       backgroundColor: Colors.purple[100],

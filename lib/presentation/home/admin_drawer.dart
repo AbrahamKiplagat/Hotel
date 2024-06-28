@@ -36,7 +36,7 @@ class AdminDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.payment), // Icon for the payment graph
-            title: Text('Payment Graph'), // Title for the payment graph
+            title: Text('Payments view '), // Title for the payment graph
             onTap: () {
               
                Navigator.pushNamed(context, '/payment-graph'); // Navigate to PaymentGraphScreen

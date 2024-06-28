@@ -45,16 +45,16 @@ class PaymentGraphScreen extends StatelessWidget {
     });
     return bars;
   }
- 
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Payment Graph'),
+        backgroundColor: Colors.purple[700],
       ),
       drawer: AdminDrawer(),
+      backgroundColor: Colors.purple[100], // Light purple background color
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchPayments(),
         builder: (context, snapshot) {
@@ -72,37 +72,72 @@ class PaymentGraphScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: AspectRatio(
               aspectRatio: 1.5, // Adjust the aspect ratio as needed
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.start ,
-                  groupsSpace: 16,
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(axisNameWidget: Text("Day"),
-                    axisNameSize: 30,
-                    sideTitles:SideTitles(
-                      reservedSize: 44,
-                      showTitles: true,
-                       getTitlesWidget: (value, meta) {
-                          // Convert numeric value (milliseconds since epoch) to formatted date
-                          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                          return Text(DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(dateTime));
-                        },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // Background color of the chart area
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
                     ),
-                   
-                     ),
-                    // show: true,
-                    leftTitles: AxisTitles(axisNameWidget: Text("Total amount"),
-                    axisNameSize: 50,
-                    sideTitles: SideTitles(
-                      reservedSize: 44,
-                      showTitles: true
-                    )
-                    
-                    ) 
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.start,
+                      groupsSpace: 16,
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          axisNameWidget: Text(
+                            "Day",
+                            style: TextStyle(
+                              color: Colors.purple[700],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          axisNameSize: 30,
+                          sideTitles: SideTitles(
+                            reservedSize: 44,
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              // Convert numeric value (milliseconds since epoch) to formatted date
+                              DateTime dateTime =
+                                  DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                              return Text(
+                                DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(dateTime),
+                                style: TextStyle(color: Colors.purple[700]),
+                              );
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          axisNameWidget: Text(
+                            "Total amount",
+                            style: TextStyle(
+                              color: Colors.purple[700],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          axisNameSize: 50,
+                          sideTitles: SideTitles(
+                            reservedSize: 44,
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                value.toString(),
+                                style: TextStyle(color: Colors.purple[700]),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      barGroups: chartData,
+                    ),
                   ),
-                  
-                
-                  barGroups: chartData,
                 ),
               ),
             ),

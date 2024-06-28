@@ -23,12 +23,23 @@ class AdminScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin'),
+        backgroundColor: Colors.purple[700],
       ),
+      backgroundColor: Colors.purple[100],
       body: Center(
         child: Container(
           width: 450,
+          height: 450,
           decoration: BoxDecoration(
             color: Colors.white,
+            borderRadius: BorderRadius.circular(12), // Rounded corners for the container
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -43,6 +54,9 @@ class AdminScreen extends StatelessWidget {
                     labelText: 'Email',
                     fillColor: Colors.white,
                     filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -52,6 +66,9 @@ class AdminScreen extends StatelessWidget {
                     labelText: 'Password',
                     fillColor: Colors.white,
                     filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                   obscureText: true,
                 ),
@@ -67,6 +84,13 @@ class AdminScreen extends StatelessWidget {
                       print('Error: $error');
                     }
                   },
+                                    style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple[700], // Button background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
                   child: const Text('Login'),
                 ),
               ],
