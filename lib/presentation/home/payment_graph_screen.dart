@@ -37,6 +37,12 @@ class PaymentGraphScreen extends StatelessWidget {
               toY: amount,
               width: 40,
               color: Color(0xFF009688),
+              borderRadius: BorderRadius.circular(4),
+              rodStackItems: [
+                BarChartRodStackItem(0, amount * 0.25, Colors.blue),
+                BarChartRodStackItem(amount * 0.25, amount * 0.5, Colors.green),
+                BarChartRodStackItem(amount * 0.5, amount, Colors.red),
+              ],
             ),
           ],
           showingTooltipIndicators: [0],
@@ -50,11 +56,11 @@ class PaymentGraphScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Payment Graph'),
-        backgroundColor: Colors.purple[700],
+        title: Text('Payment Graph', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color(0xFF009688),
       ),
       drawer: AdminDrawer(),
-      backgroundColor: Colors.purple[100], // Light purple background color
+      backgroundColor: Colors.grey[200], // Set the background color of the screen
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchPayments(),
         builder: (context, snapshot) {
@@ -72,71 +78,61 @@ class PaymentGraphScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: AspectRatio(
               aspectRatio: 1.5, // Adjust the aspect ratio as needed
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white, // Background color of the chart area
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: BarChart(
-                    BarChartData(
-                      alignment: BarChartAlignment.start,
-                      groupsSpace: 16,
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(
-                          axisNameWidget: Text(
-                            "Day",
-                            style: TextStyle(
-                              color: Colors.purple[700],
-                              fontWeight: FontWeight.bold,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.start,
+                  groupsSpace: 16,
+                  backgroundColor: Colors.white, // Set the background color of the chart
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      axisNameWidget: Text("Date & Time", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      axisNameSize: 30,
+                      sideTitles: SideTitles(
+                        reservedSize: 120,
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              DateFormat('yyyy-MM-dd\nHH:mm:ss.SSS').format(dateTime),
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          axisNameSize: 30,
-                          sideTitles: SideTitles(
-                            reservedSize: 44,
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              // Convert numeric value (milliseconds since epoch) to formatted date
-                              DateTime dateTime =
-                                  DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                              return Text(
-                                DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(dateTime),
-                                style: TextStyle(color: Colors.purple[700]),
-                              );
-                            },
-                          ),
-                        ),
-                        leftTitles: AxisTitles(
-                          axisNameWidget: Text(
-                            "Total amount",
-                            style: TextStyle(
-                              color: Colors.purple[700],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          axisNameSize: 50,
-                          sideTitles: SideTitles(
-                            reservedSize: 44,
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              return Text(
-                                value.toString(),
-                                style: TextStyle(color: Colors.purple[700]),
-                              );
-                            },
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                      barGroups: chartData,
                     ),
+                    leftTitles: AxisTitles(
+                      axisNameWidget: Text("Total Amount", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      axisNameSize: 50,
+                      sideTitles: SideTitles(
+                        reservedSize: 44,
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toInt().toString(),
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  barGroups: chartData,
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(color: Colors.grey, width: 1),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: true,
+                    horizontalInterval: 1000,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(color: Colors.grey, strokeWidth: 1);
+                    },
+                    getDrawingVerticalLine: (value) {
+                      return FlLine(color: Colors.grey, strokeWidth: 1);
+                    },
                   ),
                 ),
               ),
