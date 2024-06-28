@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:hotel/presentation/home/admin_drawer.dart'; // Import the AdminDrawer
 
 class AdminBookingDisplayScreen extends StatelessWidget {
@@ -38,6 +40,18 @@ class AdminBookingDisplayScreen extends StatelessWidget {
     });
 
     return hotelBookingsList;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPayments() async {
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await FirebaseFirestore.instance.collection('payments').get();
+
+    List<Map<String, dynamic>> paymentsList = [];
+    querySnapshot.docs.forEach((doc) {
+      paymentsList.add(doc.data());
+    });
+
+    return paymentsList;
   }
 
   String formatTimestamp(Timestamp timestamp) {
@@ -86,78 +100,102 @@ class AdminBookingDisplayScreen extends StatelessWidget {
                     return Center(child: Text('Error: ${hotelBookingsSnapshot.error}'));
                   }
 
-                  // Assuming snapshots contain lists of user, room bookings, and hotel bookings data
-                  List<Map<String, dynamic>> users = usersSnapshot.data ?? [];
-                  List<Map<String, dynamic>> roomBookings = roomBookingsSnapshot.data ?? [];
-                  List<Map<String, dynamic>> hotelBookings = hotelBookingsSnapshot.data ?? [];
+                  // Fetch payments data
+                  return FutureBuilder<List<Map<String, dynamic>>>(
+                    future: fetchPayments(),
+                    builder: (context, paymentsSnapshot) {
+                      if (paymentsSnapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (paymentsSnapshot.hasError) {
+                        return Center(child: Text('Error: ${paymentsSnapshot.error}'));
+                      }
 
-                  // Function to find user details by userId
-                  Map<String, dynamic> findUserById(String userId) {
-                    return users.firstWhere(
-                      (user) => user['userId'] == userId,
-                      orElse: () => {
-                        'displayName': 'Unknown User',
-                        'email': 'Unknown',
-                        'phoneNumber': 'N/A',
-                      },
-                    );
-                  }
+                      // Assuming snapshots contain lists of user, room bookings, hotel bookings, and payments data
+                      List<Map<String, dynamic>> users = usersSnapshot.data ?? [];
+                      List<Map<String, dynamic>> roomBookings = roomBookingsSnapshot.data ?? [];
+                      List<Map<String, dynamic>> hotelBookings = hotelBookingsSnapshot.data ?? [];
+                      List<Map<String, dynamic>> payments = paymentsSnapshot.data ?? [];
 
-                  // Combine and display all bookings data
-                  List<Map<String, dynamic>> allBookings = [
-                    ...roomBookings.map((booking) {
-                      var user = findUserById(booking['userId']);
-                      return {
-                        'userName': booking['displayName'],
-                        'email': booking['email'],
-                        'phoneNumber': booking['phoneNumber'],
-                        'bookingType': 'Room Booking',
-                        'amount': booking['amount'],
-                        'timestamp': booking['timestamp'],
-                        'hotelId': null, // Set to null for consistent structure
-                        'hotelName': null, // Set to null for consistent structure
-                      };
-                    }),
-                    ...hotelBookings.map((booking) {
-                      var user = findUserById(booking['userId']);
-                      return {
-                        'userName': booking['displayName'],
-                        'email': booking['email'],
-                        'phoneNumber': booking['phoneNumber'],
-                        'bookingType': 'Hotel Booking',
-                        'amount': booking['amount'],
-                        'timestamp': booking['timestamp'],
-                        'hotelId': booking['hotelId'],
-                        'hotelName': booking['hotelName'],
-                      };
-                    }),
-                  ];
+                      // Function to find user details by userId
+                      Map<String, dynamic> findUserById(String userId) {
+                        return users.firstWhere(
+                          (user) => user['userId'] == userId,
+                          orElse: () => {
+                            'displayName': 'Unknown User',
+                            'email': 'Unknown',
+                            'phoneNumber': 'N/A',
+                          },
+                        );
+                      }
 
-                  // Build DataTable with combined data
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columns: [
-                        DataColumn(label: Text('User Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(label: Text('Booking Type', style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataColumn(label: Text('Hotel Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                      ],
-                      rows: allBookings.map((booking) {
-                        return DataRow(cells: [
-                          DataCell(Text(booking['userName'] ?? 'Unknown')),
-                          DataCell(Text(booking['email'] ?? 'Unknown')),
-                          DataCell(Text(booking['phoneNumber'] ?? 'N/A')),
-                          DataCell(Text(booking['bookingType'] ?? 'Unknown')),
-                          DataCell(Text(booking['amount']?.toString() ?? '0')),
-                          DataCell(Text(formatTimestamp(booking['timestamp']))),
-                          DataCell(Text(booking['hotelName'] ?? 'N/A')),
-                        ]);
-                      }).toList(),
-                    ),
+                      // Function to check if the user has made a payment
+                      bool hasUserPaid(String userId) {
+                        return payments.any((payment) => payment['userId'] == userId);
+                      }
+
+                      // Combine and display all bookings data
+                      List<Map<String, dynamic>> allBookings = [
+                        ...roomBookings.map((booking) {
+                          var user = findUserById(booking['userId']);
+                          return {
+                            'userName': booking['displayName'],
+                            'email': booking['email'],
+                            'phoneNumber': booking['phoneNumber'],
+                            'bookingType': 'Room Booking',
+                            'amount': booking['amount'],
+                            'timestamp': booking['timestamp'],
+                            'hotelId': null, // Set to null for consistent structure
+                            'hotelName': booking['roomName'],
+                            'paid': hasUserPaid(booking['userId']),
+                          };
+                        }),
+                        ...hotelBookings.map((booking) {
+                          var user = findUserById(booking['userId']);
+                          return {
+                            'userName': booking['displayName'],
+                            'email': booking['email'],
+                            'phoneNumber': booking['phoneNumber'],
+                            'bookingType': 'Hotel Booking',
+                            'amount': booking['amount'],
+                            'timestamp': booking['timestamp'],
+                            'hotelId': booking['hotelId'],
+                            'hotelName': booking['hotelName'],
+                            'paid': hasUserPaid(booking['userId']),
+                          };
+                        }),
+                      ];
+
+                      // Build DataTable with combined data
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columns: [
+                            DataColumn(label: Text('User Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Email', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Phone Number', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Booking Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Amount', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Booked Date', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Hotel Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Paid', style: TextStyle(fontWeight: FontWeight.bold))),
+                          ],
+                          rows: allBookings.map((booking) {
+                            return DataRow(cells: [
+                              DataCell(Text(booking['userName'] ?? 'Unknown')),
+                              DataCell(Text(booking['email'] ?? 'Unknown')),
+                              DataCell(Text(booking['phoneNumber'] ?? 'N/A')),
+                              DataCell(Text(booking['bookingType'] ?? 'Unknown')),
+                              DataCell(Text(booking['amount']?.toString() ?? '0')),
+                              DataCell(Text(formatTimestamp(booking['timestamp']))),
+                              DataCell(Text(booking['hotelName'] ?? 'N/A')),
+                              DataCell(Text(booking['paid'] ? 'Yes' : 'No')),
+                              
+                            ]);
+                          }).toList(),
+                        ),
+                      );
+                    },
                   );
                 },
               );

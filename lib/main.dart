@@ -83,6 +83,8 @@ class Hotel extends StatelessWidget {
   }
 }
 /*** 
+ * store payements on collections 
+ * display user payements details on admin.
  * add 0.50ksh deduction  on a payed amount to your account
  * add a tests to your project to display if your project can complete all the transaction.  
 */

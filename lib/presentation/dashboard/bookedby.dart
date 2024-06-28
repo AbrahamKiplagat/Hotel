@@ -168,49 +168,39 @@ Future<void> startPaystackPayment(BuildContext context, double totalAmount, Stri
   int amountInKobo = (totalAmount * 100).toInt();  // Convert to kobo
 
   try {
-    // Debug: Print request body and headers
     var requestBody = json.encode({
       'amount': amountInKobo,
       'email': FirebaseAuth.instance.currentUser!.email!,
-      // 'currency': 'KSH', // Replace with your currency code
       'metadata': {
         'phoneNumber': phoneNumber,
       },
     });
-
-    print('Request Body: $requestBody');
 
     var headers = {
       'Authorization': 'Bearer sk_test_48e846f7f8dc3a8a2bba852a4b1c8c3ab1cb20d5',
       'Content-Type': 'application/json',
     };
 
-    print('Request Headers: $headers');
-
-    // Make HTTP request to Paystack API to initiate transaction
     var response = await http.post(
       Uri.parse('https://api.paystack.co/transaction/initialize'),
       headers: headers,
       body: requestBody,
     );
 
-    // Debug: Print response status code and body
-    print('Response Status Code: ${response.statusCode}');
-    print('Response Body: ${response.body}');
-
     if (response.statusCode == 200) {
       var responseData = json.decode(response.body);
       var authorizationUrl = responseData['data']['authorization_url'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment initiated')));
 
-        await launch(authorizationUrl);
+      await launch(authorizationUrl);
 
-      // Navigate to PaystackPaymentWebView to complete payment
+      // Save payment details to Firestore after the payment is successful
+      await savePaymentDetails(totalAmount, phoneNumber);
+
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => PaystackPaymentWebView(authorizationUrl: authorizationUrl)),
       );
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to initiate payment')));
     }
@@ -218,6 +208,22 @@ Future<void> startPaystackPayment(BuildContext context, double totalAmount, Stri
     print('Payment Error: $e');
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Payment Error: $e')));
   }
+}
+
+Future<void> savePaymentDetails(double totalAmount, String phoneNumber) async {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    throw Exception('No user logged in');
+  }
+
+  await FirebaseFirestore.instance.collection('payments').add({
+    'userId': user.uid,
+    'email': user.email,
+    'phoneNumber': phoneNumber,
+    'amount': totalAmount,
+    'timestamp': FieldValue.serverTimestamp(),
+  });
 }
 }
 
@@ -236,7 +242,7 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      return Card(
+    return Card(
       margin: EdgeInsets.all(8.0),
       child: Padding(
         padding: EdgeInsets.all(16.0),
