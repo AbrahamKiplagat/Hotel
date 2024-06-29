@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import './checkout_view.dart';
 import './no_bookings.dart';
 import 'package:url_launcher/url_launcher.dart';
+import './sendemail.dart';
 
 // Import the NoBookingsScreen widget
 // import 'no_bookings_screen.dart';
@@ -229,6 +230,12 @@ Future<void> savePaymentDetails(double totalAmount, String phoneNumber) async {
     'amount': totalAmount,
     'timestamp': FieldValue.serverTimestamp(),
   });
+  /***
+   * 
+   * 
+   * 
+   */
+   await sendPaymentNotificationEmail(user.email!, totalAmount, phoneNumber);
 }
 }
 

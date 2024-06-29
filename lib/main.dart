@@ -28,8 +28,10 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 // #enddocregion platform_imports
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:send_mail_flutter/mail_page.dart';
 Future<void> main() async {
-  
+  // await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
