@@ -33,7 +33,8 @@ The process of booking hotel accommodations can often be cumbersome and ineffici
 
 ## Proposed Solutions
 
-This project proposes the development of a robust hotel booking website designed to streamline the booking process for users while providing powerful management tools for hotel administrators. The platform will feature an intuitive user interface that allows travelers to effortlessly search for hotels based on regions.
+This project proposes the development of a robust hotel booking website designed to streamline the booking process for users while providing powerful management tools for hotel administrators.
+The platform will feature an intuitive user interface that allows travelers to effortlessly search for hotels based on regions.
 
 For hotel administrators, the website will include a comprehensive management dashboard to handle reservations, monitor room inventory, and manage customer data efficiently. Secure payment processing and automated confirmation systems will reduce the risk of booking errors and enhance user trust. By integrating these features, the proposed solution aims to create a seamless and efficient booking experience for users and a powerful management tool for hoteliers.
 
@@ -97,47 +98,54 @@ erDiagram
 
 ```
 ## How to Use the System
-## For Users
-1. Search for Hotels: Enter your desired location, check-in, and check-out dates to search for available hotels.
-2. Filter Results: Use advanced filters to narrow down your search based on price, amenities, ratings, etc.
-3. Select and Book: Choose a hotel and room, then proceed to the booking process.
-4. Secure Payment: Complete the payment using secure online payment methods.
-5. Confirmation: Receive an automated booking confirmation via email.
-## For Hotel Administrators
-1. Dashboard Access: Log in to the admin dashboard using your credentials.
-2. Manage Reservations: View, add, or modify reservations.
-3. Monitor Room Inventory: Keep track of room availability and manage room details.
-4. Manage Customer Data: Access and update customer information as needed.
-5. View Reports: Generate and view reports on bookings, payments, and customer data.
+
+### For Users
+1. **Search for Hotels:** Enter your desired hotel name location to search for available hotels.
+2. **Filter Results:** Use advanced filters to narrow down your search based on price, amenities, ratings, etc.
+3. **Select and Book:** Choose a hotel and room, then proceed to the booking process.
+4. **Secure Payment:** Complete the payment using secure online payment methods.
+5. **Confirmation:** Receive an automated booking confirmation via email.
+
+### For Hotel Administrators
+1. **Dashboard Access:** Log in to the admin dashboard using your credentials.
+2. **Manage Reservations:** View, add, or modify reservations.
+3. **Monitor Room Inventory:** Keep track of room availability and manage room details.
+4. **Manage Customer Data:** Access and update customer information as needed.
+5. **View Reports:** Generate and view reports on bookings, payments, and customer data.
+
 ## Technical Specifications
-1. Frontend: HTML, CSS, JavaScript (React)
-2. Backend: Node.js, Express.js
-3. Database: MongoDB
-4. Payment Gateway: Paystack
-5. Version Control: Git and GitHub
-6. Deployment: GitHub Pages 
+
+1. **Frontend and Backend:** Flutter (Dart)
+2. **Database:** Firebase
+3. **Payment Gateway:** Paystack
+4. **Version Control:** Git and GitHub
+5. **Deployment:** GitHub Pages
+
 ## Features
-1. Hotel Search: Users can search for hotels based on location, dates, and other criteria.
-2. Hotel Details: Users can view detailed information about each hotel, including amenities, photos, and reviews.
-3. Booking: Users can make bookings for selected hotels, specifying the number of guests and room preferences.
-4. User Authentication: Users can create accounts and log in to access personalized features, such as saved bookings and preferences.
-5. Payment Integration: Users can securely make payments for their bookings using popular payment gateways.
-6. Admin Dashboard: Manage rooms, bookings, and user accounts.
-7. User Dashboard: Make bookings, view reservations, and provide feedback.
-8. Authentication: Secure login for both admins and users.
-9. Intuitive UI: User-friendly interface for easy navigation.
+
+1. **Hotel Search:** Users can search for hotels based on Hotel name.
+2. **Hotel Details:** Users can view detailed information about each hotel, including amenities, photos, and reviews.
+3. **Booking:** Users can make bookings for selected hotels, specifying the number of guests and room preferences.
+4. **User Authentication:** Users can create accounts and log in to access personalized features, such as saved bookings and preferences.
+5. **Payment Integration:** Users can securely make payments for their bookings using popular payment gateways.
+6. **Admin Dashboard:** Manage rooms, bookings, and user accounts.
+7. **User Dashboard:** Make bookings, view reservations, and provide feedback.
+8. **Authentication:** Secure login for both admins and users.
+9. **Intuitive UI:** User-friendly interface for easy navigation.
+
 ## Acknowledgment
 
 I would like to express my sincere gratitude to my instructors at the Institute of Software Development for their guidance and support throughout this project, including:
 
-- Dr. John Doe
-- Prof. Jane Smith
-- Mr. Richard Roe
+- Mr. Edward Kabue
+- Mr. Sam Siragu
 
 Special thanks to my family and friends for their encouragement and patience during the development of this project.
 
 ## Contact
-- For any queries or support, please contact:
 
-Name: Abraham Kiplagat
-Email: kurerelagat01@gmail.com
+For any queries or support, please contact:
+
+- Name: Abraham Kiplagat
+- Email: kurerelagat01@gmail.com
+
