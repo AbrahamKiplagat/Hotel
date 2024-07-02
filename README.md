@@ -1,11 +1,11 @@
-# Hotel Management System
+## Hotel Management System
 - This repository contains the source code for a hotel management app built using Flutter.
 -  The app provides comprehensive management features for hotel administrators and users.
 -  Administrators can manage rooms, bookings, and user accounts, while users can make bookings, view their reservations, and provide feedback.
 -  The app includes authentication functionality for both admins and users, ensuring secure access to the app's features.
 -  It offers a user-friendly interface, smooth navigation, and seamless integration with backend services.
 -   Whether you're a hotel owner looking to streamline operations or a traveler seeking a convenient booking experience, this app serves as an efficient solution for managing hotel activities.
-# Description
+## Description
 - This is a hotel booking application built with Flutter.
 - It allows users to search for hotels, view hotel details, and make bookings.
 
@@ -85,3 +85,40 @@ erDiagram
     BOOKING ||--o{ PAYMENT : "has"
     HOTEL ||--o{ ROOM : "contains"
     ROOM ||--o{ BOOKING : "reserved in"
+```
+## How to Use the System
+#For Users
+1. Search for Hotels: Enter your desired location, check-in, and check-out dates to search for available hotels.
+2. Filter Results: Use advanced filters to narrow down your search based on price, amenities, ratings, etc.
+3. Select and Book: Choose a hotel and room, then proceed to the booking process.
+4. Secure Payment: Complete the payment using secure online payment methods.
+5. Confirmation: Receive an automated booking confirmation via email.
+## For Hotel Administrators
+1. Dashboard Access: Log in to the admin dashboard using your credentials.
+2. Manage Reservations: View, add, or modify reservations.
+3. Monitor Room Inventory: Keep track of room availability and manage room details.
+4. Manage Customer Data: Access and update customer information as needed.
+5. View Reports: Generate and view reports on bookings, payments, and customer data.
+## Technical Specifications
+1. Frontend: HTML, CSS, JavaScript (React)
+2. Backend: Node.js, Express.js
+3. Database: MongoDB
+4. Payment Gateway: Paystack
+5. Version Control: Git and GitHub
+6. Deployment: GitHub Pages 
+## Features
+1. Hotel Search: Users can search for hotels based on location, dates, and other criteria.
+2. Hotel Details: Users can view detailed information about each hotel, including amenities, photos, and reviews.
+3. Booking: Users can make bookings for selected hotels, specifying the number of guests and room preferences.
+4. User Authentication: Users can create accounts and log in to access personalized features, such as saved bookings and preferences.
+5. Payment Integration: Users can securely make payments for their bookings using popular payment gateways.
+6. Admin Dashboard: Manage rooms, bookings, and user accounts.
+7. User Dashboard: Make bookings, view reservations, and provide feedback.
+8. Authentication: Secure login for both admins and users.
+9. Intuitive UI: User-friendly interface for easy navigation.
+
+## Contact
+- For any queries or support, please contact:
+
+Name: Abraham Kiplagat
+Email: kurerelagat01@gmail.com
