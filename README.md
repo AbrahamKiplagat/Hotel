@@ -49,6 +49,14 @@ erDiagram
         string password
     }
 
+    ADMIN {
+        string admin_id
+        string first_name
+        string last_name
+        string email
+        string password
+    }
+
     HOTEL {
         string hotel_id
         string name
@@ -85,9 +93,11 @@ erDiagram
     BOOKING ||--o{ PAYMENT : "has"
     HOTEL ||--o{ ROOM : "contains"
     ROOM ||--o{ BOOKING : "reserved in"
+    ADMIN ||--o{ HOTEL : "manages"
+
 ```
 ## How to Use the System
-#For Users
+## For Users
 1. Search for Hotels: Enter your desired location, check-in, and check-out dates to search for available hotels.
 2. Filter Results: Use advanced filters to narrow down your search based on price, amenities, ratings, etc.
 3. Select and Book: Choose a hotel and room, then proceed to the booking process.
@@ -116,6 +126,15 @@ erDiagram
 7. User Dashboard: Make bookings, view reservations, and provide feedback.
 8. Authentication: Secure login for both admins and users.
 9. Intuitive UI: User-friendly interface for easy navigation.
+## Acknowledgment
+
+I would like to express my sincere gratitude to my instructors at the Institute of Software Development for their guidance and support throughout this project, including:
+
+- Dr. John Doe
+- Prof. Jane Smith
+- Mr. Richard Roe
+
+Special thanks to my family and friends for their encouragement and patience during the development of this project.
 
 ## Contact
 - For any queries or support, please contact:
